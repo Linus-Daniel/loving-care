@@ -1,0 +1,308 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            String         @id @default(cuid())
+  clerkId       String         @unique
+  email         String         @unique
+  name          String
+  phone         String?
+  role          Role           @default(PARENT)
+  avatar        String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  children      Child[]
+  messages      Message[]
+  tickets       SupportTicket[]
+  notifications Notification[]
+  payments      Payment[]
+}
+
+model Child {
+  id             String        @id @default(cuid())
+  firstName      String
+  lastName       String
+  dateOfBirth    DateTime
+  gender         String
+  program        String
+  enrollmentDate DateTime
+  status         EnrollStatus  @default(PENDING)
+  photo          String?
+  parentId       String
+  parent         User          @relation(fields: [parentId], references: [id])
+  medicalInfo    MedicalInfo?
+  attendance     Attendance[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model MedicalInfo {
+  id          String @id @default(cuid())
+  childId     String @unique
+  child       Child  @relation(fields: [childId], references: [id])
+  conditions  String?
+  medications String?
+  doctorName  String?
+  doctorPhone String?
+  allergies   String?
+}
+
+model Registration {
+  id              String             @id @default(cuid())
+  status          RegistrationStatus @default(PENDING)
+  childFirstName  String
+  childLastName   String
+  dateOfBirth     DateTime
+  gender          String
+  program         String
+  preferredStart  DateTime?
+  parentName      String
+  parentEmail     String
+  parentPhone     String
+  streetAddress   String
+  city            String
+  state           String
+  country         String
+  emergencyName   String
+  emergencyPhone  String
+  emergencyRel    String
+  medicalInfo     String?
+  medications     String?
+  doctorContact   String?
+  previousSchool  String?
+  gradeLevel      String?
+  referralSource  String?
+  comments        String?
+  termsAccepted   Boolean
+  privacyAccepted Boolean
+  parentalConsent Boolean
+  paymentMethod   String?
+  adminNotes      String?
+  reviewedBy      String?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+}
+
+model Attendance {
+  id        String           @id @default(cuid())
+  childId   String
+  child     Child            @relation(fields: [childId], references: [id])
+  date      DateTime
+  status    AttendanceStatus
+  notes     String?
+  markedBy  String?
+  createdAt DateTime         @default(now())
+
+  @@unique([childId, date])
+}
+
+model Payment {
+  id              String        @id @default(cuid())
+  userId          String
+  user            User          @relation(fields: [userId], references: [id])
+  stripePaymentId String?       @unique
+  amount          Float
+  currency        String        @default("NGN")
+  status          PaymentStatus
+  description     String
+  receiptUrl      String?
+  paymentMethod   String?
+  createdAt       DateTime      @default(now())
+}
+
+model Invoice {
+  id          String        @id @default(cuid())
+  invoiceNo   String        @unique
+  parentEmail String
+  parentName  String
+  items       Json
+  total       Float
+  dueDate     DateTime
+  status      InvoiceStatus @default(PENDING)
+  sentAt      DateTime?
+  paidAt      DateTime?
+  createdAt   DateTime      @default(now())
+}
+
+model Message {
+  id         String   @id @default(cuid())
+  senderId   String
+  sender     User     @relation(fields: [senderId], references: [id])
+  receiverId String
+  content    String
+  isRead     Boolean  @default(false)
+  threadId   String
+  createdAt  DateTime @default(now())
+}
+
+model Announcement {
+  id          String    @id @default(cuid())
+  title       String
+  body        String
+  targetRole  Role      @default(PARENT)
+  targetClass String?
+  isDraft     Boolean   @default(false)
+  scheduledAt DateTime?
+  sentAt      DateTime?
+  createdBy   String
+  createdAt   DateTime  @default(now())
+}
+
+model Resource {
+  id         String   @id @default(cuid())
+  name       String
+  fileUrl    String
+  fileType   String
+  category   String
+  visibility String   @default("parents")
+  uploadedBy String
+  createdAt  DateTime @default(now())
+}
+
+model SupportTicket {
+  id          String        @id @default(cuid())
+  userId      String
+  user        User          @relation(fields: [userId], references: [id])
+  subject     String
+  description String
+  priority    Priority      @default(MEDIUM)
+  status      TicketStatus  @default(OPEN)
+  assignedTo  String?
+  replies     TicketReply[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model TicketReply {
+  id        String        @id @default(cuid())
+  ticketId  String
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id])
+  content   String
+  authorId  String
+  isStaff   Boolean       @default(false)
+  createdAt DateTime      @default(now())
+}
+
+model Staff {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  phone     String?
+  role      String
+  class     String?
+  photo     String?
+  bio       String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  type      String
+  link      String?
+  createdAt DateTime @default(now())
+}
+
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     Json
+  updatedBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Event {
+  id          String              @id @default(cuid())
+  title       String
+  description String
+  date        DateTime
+  time        String?
+  location    String?
+  capacity    Int?
+  coverPhoto  String?
+  visibility  String              @default("public")
+  status      String              @default("scheduled")
+  createdBy   String?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  registrations EventRegistration[]
+}
+
+model EventRegistration {
+  id        String   @id @default(cuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id])
+  userId    String
+  reminder  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@unique([eventId, userId])
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  STAFF
+  PARENT
+}
+
+enum EnrollStatus {
+  PENDING
+  ACTIVE
+  INACTIVE
+  GRADUATED
+}
+
+enum RegistrationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  WAITLISTED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+enum InvoiceStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  CLOSED
+}

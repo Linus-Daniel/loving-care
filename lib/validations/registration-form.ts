@@ -1,0 +1,106 @@
+import { z } from "zod";
+
+const required = (label: string) => z.string().trim().min(1, `${label} is required`);
+const accepted = (message: string) => z.boolean().refine((value) => value, { message });
+
+export const registrationStepSchemas = [
+  z.object({
+    childFirstName: required("Child first name"),
+    childLastName: required("Child last name"),
+    dateOfBirth: required("Date of birth"),
+    gender: required("Gender"),
+    preferredStart: z.string().optional(),
+    parentName: required("Parent name"),
+    parentEmail: z.string().trim().email("Enter a valid email"),
+    parentPhone: required("Parent phone"),
+  }),
+  z.object({
+    streetAddress: required("Street address"),
+    city: required("City"),
+    state: required("State"),
+    country: required("Country"),
+    emergencyName: required("Emergency contact name"),
+    emergencyPhone: required("Emergency contact phone"),
+    emergencyRel: required("Emergency contact relationship"),
+  }),
+  z.object({
+    medicalInfo: z.string().optional(),
+    medications: z.string().optional(),
+    doctorContact: z.string().optional(),
+    previousSchool: z.string().optional(),
+    gradeLevel: z.string().optional(),
+    program: required("Program"),
+    referralSource: z.string().optional(),
+    comments: z.string().optional(),
+  }),
+  z.object({
+    termsAccepted: accepted("Terms must be accepted"),
+    privacyAccepted: accepted("Privacy policy must be accepted"),
+    parentalConsent: accepted("Parental consent is required"),
+  }),
+  z.object({
+    paymentMethod: z.enum(["card", "bank_transfer"], { error: "Select a payment method" }),
+  }),
+] as const;
+
+export const registrationFormSchema = z.object({
+  childFirstName: required("Child first name"),
+  childLastName: required("Child last name"),
+  dateOfBirth: required("Date of birth"),
+  gender: required("Gender"),
+  program: required("Program"),
+  preferredStart: z.string().optional(),
+  parentName: required("Parent name"),
+  parentEmail: z.string().trim().email("Enter a valid email"),
+  parentPhone: required("Parent phone"),
+  streetAddress: required("Street address"),
+  city: required("City"),
+  state: required("State"),
+  country: required("Country"),
+  emergencyName: required("Emergency contact name"),
+  emergencyPhone: required("Emergency contact phone"),
+  emergencyRel: required("Emergency contact relationship"),
+  medicalInfo: z.string().optional(),
+  medications: z.string().optional(),
+  doctorContact: z.string().optional(),
+  previousSchool: z.string().optional(),
+  gradeLevel: z.string().optional(),
+  referralSource: z.string().optional(),
+  comments: z.string().optional(),
+  termsAccepted: accepted("Terms must be accepted"),
+  privacyAccepted: accepted("Privacy policy must be accepted"),
+  parentalConsent: accepted("Parental consent is required"),
+  paymentMethod: z.enum(["card", "bank_transfer"], { error: "Select a payment method" }),
+});
+
+export type RegistrationFormValues = z.infer<typeof registrationFormSchema>;
+
+export const defaultRegistrationValues: RegistrationFormValues = {
+  childFirstName: "",
+  childLastName: "",
+  dateOfBirth: "",
+  gender: "",
+  program: "",
+  preferredStart: "",
+  parentName: "",
+  parentEmail: "",
+  parentPhone: "",
+  streetAddress: "",
+  city: "",
+  state: "",
+  country: "Nigeria",
+  emergencyName: "",
+  emergencyPhone: "",
+  emergencyRel: "",
+  medicalInfo: "",
+  medications: "",
+  doctorContact: "",
+  previousSchool: "",
+  gradeLevel: "",
+  referralSource: "",
+  comments: "",
+  termsAccepted: false,
+  privacyAccepted: false,
+  parentalConsent: false,
+  paymentMethod: "card",
+};
