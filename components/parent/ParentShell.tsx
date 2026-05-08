@@ -76,7 +76,7 @@ export function ParentShell({ children, user }: ParentShellProps) {
               onClick={() => setMobileOpen(false)}
               className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold transition-all ${
                 active
-                  ? "bg-accent text-accent-foreground shadow-soft"
+                  ? "bg-accent-300 text-accent-foreground shadow-soft"
                   : "text-primary/80 hover:bg-secondary-50 hover:text-primary"
               }`}
             >
@@ -95,7 +95,7 @@ export function ParentShell({ children, user }: ParentShellProps) {
         <div className="border-b border-primary/10 p-4">
           <Link href="/" className="flex items-center gap-3">
             <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent text-white shadow-soft">
-              <Heart className="h-5 w-5" fill="currentColor" />
+              <Heart className="h-5 w-5 text-primary-600" />
             </span>
             <span>
               <span className="block font-display text-base font-bold leading-tight text-primary">Loving Family</span>
