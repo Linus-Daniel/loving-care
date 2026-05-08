@@ -2,22 +2,21 @@
 
 import dayGridPlugin from "@fullcalendar/daygrid";
 import FullCalendar from "@fullcalendar/react";
-import { FileDown } from "lucide-react";
+import { CalendarCheck2, FileDown } from "lucide-react";
 import { toast } from "sonner";
 
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingTable } from "@/components/shared/LoadingTable";
-import { PageHeader } from "@/components/shared/PageHeader";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAttendance } from "@/hooks/useAttendance";
 
 const statusColors = {
-  PRESENT: "#16a34a",
+  PRESENT: "#C5D2B2",
   ABSENT: "#dc2626",
-  LATE: "#f59e0b",
-  EXCUSED: "#0f766e",
+  LATE: "#EA987B",
+  EXCUSED: "#B9D6DC",
 } as const;
 
 const statuses = ["PRESENT", "ABSENT", "LATE", "EXCUSED"] as const;
@@ -49,13 +48,16 @@ export default function ParentAttendancePage() {
     count: records.filter((record) => record.status === status).length,
   }));
 
+  const present = counts.find((item) => item.status === "PRESENT")?.count ?? 0;
+  const attendanceRate = records.length ? Math.round((present / records.length) * 100) : 0;
+
   const calendarEvents = records.map((record) => ({
     id: record.id,
     title: record.status.toLowerCase(),
     date: record.date,
     backgroundColor: statusColors[record.status],
     borderColor: statusColors[record.status],
-    textColor: "#ffffff",
+    textColor: record.status === "PRESENT" || record.status === "EXCUSED" ? "#21445E" : "#ffffff",
   }));
 
   const handleExport = () => {
@@ -75,37 +77,50 @@ export default function ParentAttendancePage() {
   };
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Attendance Records"
-        description="Track your child's attendance history and monthly patterns."
-        action={
-          <Button onClick={handleExport} disabled={records.length === 0}>
-            <FileDown className="mr-2 h-4 w-4" />
-            Export
-          </Button>
-        }
-      />
+    <div className="mx-auto max-w-7xl space-y-6">
+      <section className="overflow-hidden rounded-[2rem] border border-primary/10 bg-white shadow-card">
+        <div className="grid gap-0 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="p-6 sm:p-8">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-50 text-accent">
+              <CalendarCheck2 className="h-6 w-6" />
+            </div>
+            <h1 className="font-display text-3xl font-bold text-primary sm:text-4xl">Attendance Records</h1>
+            <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
+              Track your child's daily attendance history and monthly attendance patterns.
+            </p>
+          </div>
+          <div className="border-t border-primary/10 bg-secondary-50 p-6 sm:p-8 lg:border-l lg:border-t-0">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">Monthly Rate</p>
+            <p className="mt-3 font-display text-4xl font-bold text-primary">{attendanceRate}%</p>
+            <Button className="mt-5 bg-accent text-white hover:bg-accent-400" onClick={handleExport} disabled={records.length === 0}>
+              <FileDown className="h-4 w-4" />
+              Export CSV
+            </Button>
+          </div>
+        </div>
+      </section>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {counts.map((item) => (
-          <Card key={item.status}>
+          <Card key={item.status} className="border-primary/10 bg-white shadow-soft">
             <CardContent className="p-5">
-              <p className="text-sm capitalize text-muted-foreground">{item.status.toLowerCase()}</p>
-              <div className="mt-3 flex items-center justify-between">
-                <span className="text-3xl font-bold text-green-500">{item.count}</span>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                {item.status.toLowerCase()}
+              </p>
+              <div className="mt-3 flex items-center justify-between gap-3">
+                <span className="font-display text-3xl font-bold text-primary">{item.count}</span>
                 <StatusBadge status={item.status} />
               </div>
             </CardContent>
           </Card>
         ))}
-      </div>
+      </section>
 
-      <Card>
+      <Card className="border-primary/10 bg-white shadow-card">
         <CardHeader>
-          <CardTitle>Monthly Calendar</CardTitle>
+          <CardTitle className="font-display text-xl text-primary">Monthly Calendar</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="parent-calendar">
           <FullCalendar
             plugins={[dayGridPlugin]}
             initialView="dayGridMonth"
@@ -120,9 +135,9 @@ export default function ParentAttendancePage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="border-primary/10 bg-white shadow-card">
         <CardHeader>
-          <CardTitle>Daily Details</CardTitle>
+          <CardTitle className="font-display text-xl text-primary">Daily Details</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -130,31 +145,33 @@ export default function ParentAttendancePage() {
           ) : records.length === 0 ? (
             <EmptyState title="No attendance records" description="Attendance entries will appear here once marked by staff." />
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b text-left text-muted-foreground">
-                    <th className="py-3 pr-4 font-medium">Date</th>
-                    <th className="py-3 pr-4 font-medium">Child</th>
-                    <th className="py-3 pr-4 font-medium">Status</th>
-                    <th className="py-3 font-medium">Notes</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {records.map((record) => (
-                    <tr key={record.id} className="border-b last:border-0">
-                      <td className="py-3 pr-4">{formatDate(record.date)}</td>
-                      <td className="py-3 pr-4">
-                        {record.child ? `${record.child.firstName} ${record.child.lastName}` : "My child"}
-                      </td>
-                      <td className="py-3 pr-4">
-                        <StatusBadge status={record.status} />
-                      </td>
-                      <td className="py-3 text-muted-foreground">{record.notes ?? "No notes"}</td>
+            <div className="overflow-hidden rounded-3xl border border-primary/10">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-secondary-50">
+                    <tr className="text-left text-muted-foreground">
+                      <th className="px-4 py-3 font-bold">Date</th>
+                      <th className="px-4 py-3 font-bold">Child</th>
+                      <th className="px-4 py-3 font-bold">Status</th>
+                      <th className="px-4 py-3 font-bold">Notes</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {records.map((record) => (
+                      <tr key={record.id} className="border-t border-primary/10 bg-white">
+                        <td className="px-4 py-4">{formatDate(record.date)}</td>
+                        <td className="px-4 py-4 font-medium text-primary">
+                          {record.child ? `${record.child.firstName} ${record.child.lastName}` : "My child"}
+                        </td>
+                        <td className="px-4 py-4">
+                          <StatusBadge status={record.status} />
+                        </td>
+                        <td className="px-4 py-4 text-muted-foreground">{record.notes ?? "No notes"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
         </CardContent>

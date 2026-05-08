@@ -1,74 +1,88 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useClerk } from "@clerk/nextjs";
 import {
-  LayoutDashboard, Users, Baby, CalendarDays, CreditCard, ClipboardList,
-  Calendar, MessageSquare, Megaphone, FileText, HelpCircle, BarChart3,
-  ShieldCheck, Settings, LogOut, Menu, X, Heart, Bell, Search
-} from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useClerk } from '@clerk/nextjs';
-import { useMarkAllNotificationsRead, useNotifications, useRealtimeNotifications } from '@/hooks/useNotifications';
+  Baby,
+  BarChart3,
+  Bell,
+  Calendar,
+  CalendarDays,
+  ClipboardList,
+  CreditCard,
+  FileText,
+  Heart,
+  HelpCircle,
+  LayoutDashboard,
+  LogOut,
+  Megaphone,
+  Menu,
+  MessageSquare,
+  Search,
+  Settings,
+  ShieldCheck,
+  Users,
+  X,
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
+import { useMarkAllNotificationsRead, useNotifications, useRealtimeNotifications } from "@/hooks/useNotifications";
 
 const sidebarSections = [
   {
-    title: 'Overview',
+    title: "Overview",
+    items: [{ href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard }],
+  },
+  {
+    title: "People",
     items: [
-      { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { href: "/admin/children", label: "Children", icon: Baby },
+      { href: "/admin/parents", label: "Parents", icon: Users },
+      { href: "/admin/staff", label: "Staff", icon: ShieldCheck },
     ],
   },
   {
-    title: 'People',
+    title: "Attendance",
     items: [
-      { href: '/admin/children', label: 'Children', icon: Baby },
-      { href: '/admin/parents', label: 'Parents', icon: Users },
-      { href: '/admin/staff', label: 'Staff', icon: ShieldCheck },
+      { href: "/admin/attendance", label: "Attendance", icon: CalendarDays },
+      { href: "/admin/attendance-reports", label: "Reports", icon: BarChart3 },
+      { href: "/admin/calendar", label: "Calendar", icon: Calendar },
     ],
   },
   {
-    title: 'Attendance',
+    title: "Registrations",
+    items: [{ href: "/admin/registrations", label: "Registrations", icon: ClipboardList }],
+  },
+  {
+    title: "Finance",
     items: [
-      { href: '/admin/attendance', label: 'Attendance', icon: CalendarDays },
-      { href: '/admin/attendance-reports', label: 'Reports', icon: BarChart3 },
-      { href: '/admin/calendar', label: 'Calendar', icon: Calendar },
+      { href: "/admin/payments", label: "Payments", icon: CreditCard },
+      { href: "/admin/invoices", label: "Invoices", icon: FileText },
     ],
   },
   {
-    title: 'Registrations',
+    title: "Communications",
     items: [
-      { href: '/admin/registrations', label: 'Registrations', icon: ClipboardList },
+      { href: "/admin/events", label: "Events", icon: Calendar },
+      { href: "/admin/messages", label: "Messages", icon: MessageSquare },
+      { href: "/admin/announcements", label: "Announcements", icon: Megaphone },
+      { href: "/admin/resources", label: "Resources", icon: FileText },
+      { href: "/admin/cms", label: "CMS", icon: FileText },
+      { href: "/admin/studio", label: "Studio", icon: FileText },
     ],
   },
   {
-    title: 'Finance',
+    title: "System",
     items: [
-      { href: '/admin/payments', label: 'Payments', icon: CreditCard },
-      { href: '/admin/invoices', label: 'Invoices', icon: FileText },
-    ],
-  },
-  {
-    title: 'Communications',
-    items: [
-      { href: '/admin/events', label: 'Events', icon: Calendar },
-      { href: '/admin/messages', label: 'Messages', icon: MessageSquare },
-      { href: '/admin/announcements', label: 'Announcements', icon: Megaphone },
-      { href: '/admin/resources', label: 'Resources', icon: FileText },
-      { href: '/admin/cms', label: 'CMS', icon: FileText },
-      { href: '/admin/studio', label: 'Studio', icon: FileText },
-    ],
-  },
-  {
-    title: 'System',
-    items: [
-      { href: '/admin/support', label: 'Support', icon: HelpCircle },
-      { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
-      { href: '/admin/seo', label: 'SEO', icon: Search },
-      { href: '/admin/social', label: 'Social', icon: Megaphone },
-      { href: '/admin/roles', label: 'Roles', icon: ShieldCheck },
-      { href: '/admin/settings', label: 'Settings', icon: Settings },
+      { href: "/admin/support", label: "Support", icon: HelpCircle },
+      { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
+      { href: "/admin/seo", label: "SEO", icon: Search },
+      { href: "/admin/social", label: "Social", icon: Megaphone },
+      { href: "/admin/roles", label: "Roles", icon: ShieldCheck },
+      { href: "/admin/settings", label: "Settings", icon: Settings },
     ],
   },
 ];
@@ -81,17 +95,17 @@ const notificationTypeByHref: Record<string, string> = {
 };
 
 const notificationColorByType: Record<string, string> = {
-  payment: "bg-emerald-300",
-  message: "bg-red-400",
-  registration: "bg-red-400",
-  enrollment: "bg-red-400",
+  payment: "bg-surface",
+  message: "bg-accent",
+  registration: "bg-accent",
+  enrollment: "bg-accent",
 };
 
 interface AdminShellProps {
   children: React.ReactNode;
   user: {
     fullName: string | null;
-    imageUrl: string;
+    imageUrl: string | null;
     role: string;
   };
 }
@@ -112,24 +126,27 @@ export function AdminShell({ children, user }: AdminShellProps) {
   }, [unreadNotifications]);
 
   const totalUnread = unreadNotifications.length;
-
   const displayName = user.fullName || "Admin";
-  const initials = displayName
-    .split(" ")
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
+  const initials =
+    displayName
+      .split(" ")
+      .map((part) => part[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase() || "AD";
 
   const handleLogout = async () => {
     await signOut({ redirectUrl: "/" });
   };
 
-  const markSectionRead = useCallback((href: string) => {
-    const type = notificationTypeByHref[href];
-    if (!type || !unreadCounts[type] || markNotificationsRead.isPending) return;
-    markNotificationsRead.mutate(type);
-  }, [markNotificationsRead, unreadCounts]);
+  const markSectionRead = useCallback(
+    (href: string) => {
+      const type = notificationTypeByHref[href];
+      if (!type || !unreadCounts[type] || markNotificationsRead.isPending) return;
+      markNotificationsRead.mutate(type);
+    },
+    [markNotificationsRead, unreadCounts],
+  );
 
   useEffect(() => {
     const matchingHref = Object.keys(notificationTypeByHref)
@@ -147,179 +164,160 @@ export function AdminShell({ children, user }: AdminShellProps) {
     if (!type || count === 0) return null;
 
     return (
-      <span className="ml-auto flex min-w-5 items-center justify-end gap-1">
-        <span className={`h-2 w-2 rounded-full ${notificationColorByType[type] ?? "bg-red-400"}`} />
-        <span className={`text-[10px] font-bold ${active ? "text-green-500" : "text-white"}`}>
-          {count > 9 ? "9+" : count}
-        </span>
+      <span className="ml-auto flex min-w-6 items-center justify-end gap-1">
+        <span className={`h-2 w-2 rounded-full ${notificationColorByType[type] ?? "bg-accent"}`} />
+        <span className={`text-[10px] font-bold ${active ? "text-white" : "text-primary"}`}>{count > 9 ? "9+" : count}</span>
       </span>
     );
   };
 
+  const nav = (
+    <nav className="flex-1 overflow-y-auto px-3 py-3">
+      {sidebarSections.map((section) => (
+        <div key={section.title} className="mb-4">
+          <p className="mb-1 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+            {section.title}
+          </p>
+          <div className="space-y-1">
+            {section.items.map((item) => {
+              const Icon = item.icon;
+              const active = pathname === item.href || (item.href === "/admin/dashboard" && pathname === "/admin");
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => {
+                    markSectionRead(item.href);
+                    setMobileOpen(false);
+                  }}
+                  className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold transition-all ${
+                    active
+                      ? "bg-accent text-white shadow-soft"
+                      : "text-primary/80 hover:bg-secondary-50 hover:text-primary"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="truncate">{item.label}</span>
+                  {renderNotificationMarker(item.href, active)}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </nav>
+  );
+
   return (
-    <div className="min-h-screen bg-background flex">
-      {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col w-72 bg-green-500 text-white fixed h-screen overflow-y-auto">
-        <div className="p-4 border-b border-white/10">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
-              <Heart className="w-4 h-4 text-green-500" fill="currentColor" />
-            </div>
-            <div>
-              <span className="font-display font-bold text-sm leading-tight block">Loving Family</span>
-              <span className="text-[9px] uppercase tracking-wider text-secondary -mt-0.5 block">Admin Portal</span>
-            </div>
+    <div className="min-h-screen bg-[#FFF9F0] text-primary">
+      <aside className="fixed left-4 top-4 bottom-4 hidden w-72 flex-col rounded-3xl border border-primary/10 bg-white/90 shadow-card backdrop-blur lg:flex">
+        <div className="border-b border-primary/10 p-4">
+          <Link href="/" className="flex items-center gap-3">
+            <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-accent text-white shadow-soft">
+              <Heart className="h-5 w-5" fill="currentColor" />
+            </span>
+            <span>
+              <span className="block font-display text-base font-bold leading-tight text-primary">Loving Family</span>
+              <span className="block text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">
+                Admin Portal
+              </span>
+            </span>
           </Link>
         </div>
 
         <div className="p-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
-            <Input
-              placeholder="Search..."
-              className="pl-9 secondary-50/10 border-white/10 text-white placeholder:text-white/40 text-sm"
-            />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input placeholder="Search..." className="h-11 rounded-2xl border-primary/10 bg-[#FFF9F0] pl-9 text-sm" />
           </div>
         </div>
 
-        <nav className="flex-1 py-2 px-3">
-          {sidebarSections.map((section) => (
-            <div key={section.title} className="mb-4">
-              <p className="px-3 text-[10px] uppercase tracking-wider text-white/40 font-semibold mb-1">
-                {section.title}
-              </p>
-              <div className="space-y-0.5">
-                {section.items.map((item) => {
-                  const Icon = item.icon;
-                  const active = pathname === item.href;
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => markSectionRead(item.href)}
-                      className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        active
-                          ? 'bg-secondary text-green-500'
-                          : 'text-white/80 hover:secondary-50/10 hover:text-white'
-                      }`}
-                    >
-                      <Icon className="w-4 h-4" />
-                      <span className="truncate">{item.label}</span>
-                      {renderNotificationMarker(item.href, active)}
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </nav>
+        {nav}
 
-        <div className="p-4 border-t border-white/10">
+        <div className="border-t border-primary/10 p-4">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 text-sm text-white/70 hover:text-white transition-colors"
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-muted-foreground transition-colors hover:bg-accent-50 hover:text-accent-700"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="h-4 w-4" />
             Logout
           </button>
         </div>
       </aside>
 
-      {/* Mobile Sidebar Overlay */}
-      {mobileOpen && (
+      {mobileOpen ? (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setMobileOpen(false)} />
-          <div className="absolute left-0 top-0 h-full w-72 bg-green-500 text-white overflow-y-auto">
-            <div className="p-4 border-b border-white/10 flex items-center justify-between">
-              <Link href="/" className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
-                  <Heart className="w-4 h-4 text-green-500" fill="currentColor" />
-                </div>
-                <div>
-                  <span className="font-display font-bold text-sm block">Loving Family</span>
-                  <span className="text-[9px] uppercase tracking-wider text-secondary block">Admin Portal</span>
-                </div>
+          <button
+            className="absolute inset-0 bg-primary/25"
+            onClick={() => setMobileOpen(false)}
+            aria-label="Close navigation overlay"
+          />
+          <div className="absolute left-0 top-0 flex h-full w-80 flex-col border-r border-primary/10 bg-[#FFF9F0] shadow-premium">
+            <div className="flex items-center justify-between border-b border-primary/10 p-4">
+              <Link href="/" className="flex items-center gap-3" onClick={() => setMobileOpen(false)}>
+                <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-accent text-white">
+                  <Heart className="h-5 w-5" fill="currentColor" />
+                </span>
+                <span>
+                  <span className="block font-display text-sm font-bold text-primary">Loving Family</span>
+                  <span className="block text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                    Admin Portal
+                  </span>
+                </span>
               </Link>
-              <button onClick={() => setMobileOpen(false)} className="p-1 rounded hover:secondary-50/10">
-                <X className="w-5 h-5" />
+              <button
+                onClick={() => setMobileOpen(false)}
+                className="rounded-xl p-2 text-primary hover:bg-secondary-50"
+                aria-label="Close navigation"
+              >
+                <X className="h-5 w-5" />
               </button>
             </div>
-            <nav className="py-2 px-3">
-              {sidebarSections.map((section) => (
-                <div key={section.title} className="mb-4">
-                  <p className="px-3 text-[10px] uppercase tracking-wider text-white/40 font-semibold mb-1">
-                    {section.title}
-                  </p>
-                  <div className="space-y-0.5">
-                    {section.items.map((item) => {
-                      const Icon = item.icon;
-                      const active = pathname === item.href;
-                      return (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          onClick={() => {
-                            markSectionRead(item.href);
-                            setMobileOpen(false);
-                          }}
-                          className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                            active ? 'bg-secondary text-green-500' : 'text-white/80 hover:secondary-50/10'
-                          }`}
-                        >
-                          <Icon className="w-4 h-4" />
-                          <span className="truncate">{item.label}</span>
-                          {renderNotificationMarker(item.href, active)}
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-            </nav>
+            {nav}
           </div>
         </div>
-      )}
+      ) : null}
 
-      {/* Main Content */}
-      <div className="flex-1 lg:ml-72">
-        {/* Top Header */}
-        <header className="sticky top-0 z-40 secondary-50 border-b border-border px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <button
-              className="lg:hidden p-2 rounded-lg hover:bg-muted"
-              onClick={() => setMobileOpen(true)}
-            >
-              <Menu className="w-5 h-5" />
-            </button>
-            <div className="hidden sm:block">
-              <p className="text-sm font-medium text-muted-foreground">
-                {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <button className="relative p-2 rounded-lg hover:bg-muted">
-              <Bell className="w-5 h-5 text-muted-foreground" />
-              {totalUnread > 0 && (
-                <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-destructive" />
-              )}
-            </button>
-            <div className="flex items-center gap-2">
-              <Avatar className="w-8 h-8">
-                <AvatarImage src={user.imageUrl} />
-                <AvatarFallback>{initials || "AD"}</AvatarFallback>
-              </Avatar>
+      <div className="lg:pl-80">
+        <header className="sticky top-0 z-40 border-b border-primary/10 bg-[#FFF9F0]/90 px-4 py-3 backdrop-blur lg:px-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <button
+                className="rounded-xl p-2 text-primary hover:bg-secondary-50 lg:hidden"
+                onClick={() => setMobileOpen(true)}
+                aria-label="Open navigation"
+              >
+                <Menu className="h-5 w-5" />
+              </button>
               <div className="hidden sm:block">
-                <p className="text-sm font-medium">{displayName}</p>
-                <p className="text-xs text-muted-foreground">{user.role.replace("_", " ")}</p>
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">
+                  {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
+                </p>
+                <p className="font-display text-lg font-bold text-primary">Admin workspace</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button className="relative rounded-xl border border-primary/10 bg-white/80 p-2 text-primary shadow-xs hover:bg-secondary-50">
+                <Bell className="h-5 w-5" />
+                {totalUnread > 0 ? <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-accent" /> : null}
+              </button>
+              <div className="flex items-center gap-2 rounded-2xl border border-primary/10 bg-white/80 px-2 py-1.5 shadow-xs">
+                <Avatar className="h-9 w-9">
+                  <AvatarImage src={user.imageUrl ?? undefined} />
+                  <AvatarFallback className="bg-secondary-100 text-xs font-bold text-primary">{initials}</AvatarFallback>
+                </Avatar>
+                <div className="hidden min-w-0 sm:block">
+                  <p className="truncate text-sm font-bold text-primary">{displayName}</p>
+                  <p className="text-xs capitalize text-muted-foreground">{user.role.replace("_", " ").toLowerCase()}</p>
+                </div>
               </div>
             </div>
           </div>
         </header>
 
-        <main className="p-4 lg:p-8 pb-20 lg:pb-8">
-          {children}
-        </main>
+        <main className="px-4 py-5 pb-16 sm:px-6 lg:px-8 lg:py-8">{children}</main>
       </div>
     </div>
   );

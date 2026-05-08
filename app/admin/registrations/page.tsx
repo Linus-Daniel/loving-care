@@ -109,8 +109,10 @@ export default function Registrations() {
           <button
             key={item}
             onClick={() => setFilter(item)}
-            className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-              filter === item ? "bg-secondary text-green-500" : "bg-muted text-muted-foreground"
+            className={`rounded-2xl px-4 py-2 text-sm font-bold transition-colors ${
+              filter === item
+                ? "bg-accent text-white shadow-soft"
+                : "bg-white text-primary shadow-xs hover:bg-secondary-50"
             }`}
           >
             {item}

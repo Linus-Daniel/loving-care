@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useMarkAttendance, type AttendanceRecord } from "@/hooks/useAttendance";
+import { useAttendance, useMarkAttendance, type AttendanceRecord } from "@/hooks/useAttendance";
 import { useChildren } from "@/hooks/useChildren";
 
 const statusOptions: Array<{
@@ -67,10 +67,10 @@ export default function AdminAttendancePage() {
     <div className="space-y-6">
       <PageHeader title="Attendance Management" description="Mark daily attendance by child and class with auto-save." />
 
-      <Card>
+      <Card className="border-primary/10 bg-white shadow-card">
         <CardContent className="flex flex-col gap-3 p-4 lg:flex-row lg:items-center">
-          <div className="flex items-center gap-2 rounded-lg bg-muted px-3 py-2">
-            <CalendarDays className="h-4 w-4 text-green-500" />
+          <div className="flex items-center gap-2 rounded-lg bg-surface/70 px-3 py-2">
+            <CalendarDays className="h-4 w-4 text-primary" />
             <Input type="date" value={date} onChange={(event) => setDate(event.target.value)} className="h-auto border-none bg-transparent p-0" />
           </div>
           <Select value={program} onValueChange={setProgram}>
@@ -88,7 +88,7 @@ export default function AdminAttendancePage() {
           </Select>
           <Button 
             variant="outline" 
-            className="lg:ml-auto" 
+            className="border-primary/15 text-primary hover:bg-surface/70 lg:ml-auto" 
             onClick={markAllPresent} 
             disabled={
               children.length === 0 || 
@@ -108,12 +108,12 @@ export default function AdminAttendancePage() {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="overflow-hidden border-primary/10 bg-white shadow-card">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b bg-muted/50 text-left text-muted-foreground">
+                <tr className="border-b border-primary/10 bg-secondary-50 text-left text-muted-foreground">
                   <th className="px-4 py-3 font-medium">Child</th>
                   <th className="px-4 py-3 font-medium">Class</th>
                   <th className="px-4 py-3 font-medium">Status</th>
@@ -136,7 +136,7 @@ export default function AdminAttendancePage() {
                   children.map((child) => {
                     const currentStatus = attendanceMap[child.id];
                     return (
-                      <tr key={child.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
+                      <tr key={child.id} className="border-b border-primary/10 transition-colors last:border-0 hover:bg-surface/40">
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
                             <Avatar className="h-9 w-9">
@@ -144,7 +144,7 @@ export default function AdminAttendancePage() {
                               <AvatarFallback>{child.firstName.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div>
-                              <p className="font-medium text-green-500">{child.firstName} {child.lastName}</p>
+                              <p className="font-medium text-primary">{child.firstName} {child.lastName}</p>
                               <p className="text-xs text-muted-foreground">{child.parent?.name ?? "No parent linked"}</p>
                             </div>
                           </div>
@@ -162,7 +162,7 @@ export default function AdminAttendancePage() {
                                   variant={isSelected ? "default" : "outline"}
                                   onClick={() => setStatus(child.id, option.value)}
                                   disabled={markAttendance.isPending || isSelected}
-                                  className={isSelected ? "bg-green-500 text-white opacity-50 cursor-not-allowed" : ""}
+                                  className={isSelected ? "cursor-not-allowed bg-primary text-white opacity-50" : "border-primary/15 text-primary hover:bg-surface/70"}
                                 >
                                   <Icon className="mr-1 h-3 w-3" />
                                   {option.label}

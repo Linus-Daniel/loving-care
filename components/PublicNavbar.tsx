@@ -31,7 +31,7 @@ export default function PublicNavbar() {
   return (
     <nav className={cn(
       "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-      scrolled ? "bg-background/90 backdrop-blur-md shadow-sm py-3 border-b border-border" : "bg-transparent py-5"
+      scrolled ? "bg-background/90 backdrop-blur-md shadow-sm py-3 border-b border-border" : "bg-background/50 py-5"
     )}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
@@ -55,10 +55,10 @@ export default function PublicNavbar() {
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    "text-sm font-medium transition-colors hover:text-accent",
+                    "text-sm px-2 py-1 font-medium transition-colors hover:text-accent",
                     pathname === link.href 
-                      ? "text-accent" 
-                      : (scrolled || pathname !== '/' ? "text-green-500/70" : "text-white/80")
+                      ? "border-[2px] border-solid rounded-md border-primary-600" 
+                      : (scrolled || pathname !== '/' ? "text-green-500/70" : "")
                   )}
                 >
                   {link.label}
@@ -67,8 +67,8 @@ export default function PublicNavbar() {
             </div>
             <div className="flex items-center gap-3 border-l border-border pl-8">
               <Link href="/login" className={cn(
-                "text-sm font-semibold hover:opacity-80 transition-opacity",
-                scrolled || pathname !== '/' ? "text-green-500" : "text-white"
+                "text-sm font-semibold bg-primary-600 text-white p-3 rounded-full hover:opacity-80 transition-opacity",
+                scrolled || pathname !== '/' ? "text-white" : ""
               )}>
                 Sign In
               </Link>

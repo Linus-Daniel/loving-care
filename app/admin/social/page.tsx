@@ -56,14 +56,14 @@ export default function SocialPage() {
           const Icon = platform.icon;
           const value = settings.platforms[platform.key];
           return (
-            <Card key={platform.key}>
+            <Card key={platform.key} className="border-primary/10 bg-white shadow-soft">
               <CardContent className="space-y-4 p-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/10">
-                      <Icon className="h-5 w-5 text-green-500" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface text-primary">
+                      <Icon className="h-5 w-5 text-primary" />
                     </div>
-                    <p className="font-semibold text-green-500">{platform.label}</p>
+                    <p className="font-semibold text-primary">{platform.label}</p>
                   </div>
                   <Switch
                     checked={value.enabled}
@@ -89,12 +89,12 @@ export default function SocialPage() {
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   {[1, 2, 3].map((item) => (
-                    <div key={item} className="rounded-lg bg-muted p-2 text-center text-xs text-muted-foreground">
+                    <div key={item} className="rounded-lg bg-surface/70 p-2 text-center text-xs text-muted-foreground">
                       Preview {item}
                     </div>
                   ))}
                 </div>
-                <Button variant="outline" className="w-full" onClick={() => toast.info(`${platform.label} preview requires platform API credentials`)}>
+                <Button variant="outline" className="w-full border-primary/15 text-primary hover:bg-surface/70" onClick={() => toast.info(`${platform.label} preview requires platform API credentials`)}>
                   Fetch latest 3 posts
                 </Button>
               </CardContent>
@@ -102,15 +102,15 @@ export default function SocialPage() {
           );
         })}
       </div>
-      <Card>
+      <Card className="border-primary/10 bg-white shadow-card">
         <CardContent className="space-y-4 p-5">
           <div>
-            <p className="font-semibold text-green-500">Share buttons</p>
+            <p className="font-semibold text-primary">Share buttons</p>
             <p className="text-sm text-muted-foreground">Choose which public pages show share buttons.</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-3">
             {(["programs", "gallery", "events"] as const).map((key) => (
-              <div key={key} className="flex items-center justify-between rounded-lg bg-muted p-3">
+              <div key={key} className="flex items-center justify-between rounded-lg bg-surface/70 p-3">
                 <Label className="capitalize">{key}</Label>
                 <Switch
                   checked={settings.shareButtons[key]}

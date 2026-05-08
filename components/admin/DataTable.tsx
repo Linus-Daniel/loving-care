@@ -68,7 +68,12 @@ export function DataTable<TData extends object>({
           {searchable ? (
             <div className="relative max-w-sm flex-1">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input value={globalFilter} onChange={(event) => setGlobalFilter(event.target.value)} placeholder="Search..." className="pl-9" />
+              <Input
+                value={globalFilter}
+                onChange={(event) => setGlobalFilter(event.target.value)}
+                placeholder="Search..."
+                className="h-11 rounded-2xl border-primary/10 bg-[#FFF9F0] pl-9"
+              />
             </div>
           ) : (
             <span />
@@ -85,13 +90,13 @@ export function DataTable<TData extends object>({
       {table.getRowModel().rows.length === 0 ? (
         <EmptyState title={emptyTitle} description="Try changing your filters or adding a new record." />
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-border secondary-50">
+        <div className="overflow-x-auto rounded-3xl border border-primary/10 bg-white">
           <table className="w-full text-sm">
-            <thead className="bg-muted/60">
+            <thead className="bg-secondary-50">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (
-                    <th key={header.id} className="px-4 py-3 text-left font-semibold text-muted-foreground">
+                    <th key={header.id} className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
                       {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </th>
                   ))}
@@ -100,7 +105,7 @@ export function DataTable<TData extends object>({
             </thead>
             <tbody>
               {table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className="border-t border-border">
+                <tr key={row.id} className="border-t border-primary/10 transition-colors hover:bg-[#FFF9F0]">
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="px-4 py-3">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}

@@ -62,17 +62,17 @@ export default function SeoPage() {
         title="SEO Settings"
         description="Tune page metadata, OG images, basic SEO scoring, and robots directives."
         action={
-          <Button onClick={() => toast.success("Sitemap regeneration requested")}>
+          <Button className="bg-accent text-white hover:bg-accent-400" onClick={() => toast.success("Sitemap regeneration requested")}>
             <RefreshCw className="mr-2 h-4 w-4" /> Regenerate Sitemap
           </Button>
         }
       />
       <div className="space-y-4">
         {rowsWithScores.map((row, index) => (
-          <Card key={row.path}>
+          <Card key={row.path} className="border-primary/10 bg-white shadow-soft">
             <CardContent className="grid gap-4 p-4 lg:grid-cols-[150px_1fr_1fr_170px]">
               <div>
-                <p className="font-semibold text-green-500">{row.page}</p>
+                <p className="font-semibold text-primary">{row.page}</p>
                 <p className="text-xs text-muted-foreground">{row.path}</p>
                 <StatusBadge status={row.score >= 70 ? "ACTIVE" : row.score >= 40 ? "PENDING" : "REJECTED"} />
                 <p className="mt-2 text-xs text-muted-foreground">Score: {row.score}/100</p>
@@ -105,7 +105,7 @@ export default function SeoPage() {
                       toast.error(error.message);
                     }}
                     content={{ button: <Upload className="h-4 w-4" />, allowedContent: "" }}
-                    appearance={{ button: "bg-green-500 text-white h-9 w-10", allowedContent: "hidden" }}
+                    appearance={{ button: "bg-accent text-white h-9 w-10", allowedContent: "hidden" }}
                   />
                 </div>
               </div>

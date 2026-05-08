@@ -21,7 +21,7 @@ import { useChildren } from "@/hooks/useChildren";
 import { usePayments } from "@/hooks/usePayments";
 import { useRegistrations } from "@/hooks/useRegistrations";
 
-const colors = ["#0D1F5C", "#2A9D8F", "#F5C518", "#2D2D2D", "#DC2626"];
+const colors = ["#0D1F5C", "#EA987B", "#C9A450", "#DDEFEA", "#24313A"];
 
 function monthLabel(value: string) {
   return new Intl.DateTimeFormat("en-NG", { month: "short" }).format(new Date(value));
@@ -83,45 +83,45 @@ export default function Analytics() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-display font-bold text-green-500 lg:text-2xl">Analytics & Reports</h1>
+        <h1 className="text-xl font-display font-bold text-primary lg:text-2xl">Analytics & Reports</h1>
         <p className="text-sm text-muted-foreground">Live enrollment, payment, and attendance insights from backend data.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="shadow-soft"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Total Children</p><p className="text-2xl font-bold text-green-500">{children.length}</p><p className="text-xs text-muted-foreground">Active database records</p></CardContent></Card>
-        <Card className="shadow-soft"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Revenue (YTD)</p><p className="text-2xl font-bold text-green-500">{money(revenueYtd)}</p><p className="text-xs text-muted-foreground">Succeeded payments</p></CardContent></Card>
-        <Card className="shadow-soft"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Approved Enrollments</p><p className="text-2xl font-bold text-green-500">{approvedRegistrations}</p><p className="text-xs text-muted-foreground">From registrations API</p></CardContent></Card>
-        <Card className="shadow-soft"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Avg Attendance</p><p className="text-2xl font-bold text-green-500">{attendanceRate}%</p><p className="text-xs text-muted-foreground">{attendance.length} records</p></CardContent></Card>
+        <Card className="border-primary/10 bg-white shadow-soft"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Total Children</p><p className="text-2xl font-bold text-primary">{children.length}</p><p className="text-xs text-muted-foreground">Active database records</p></CardContent></Card>
+        <Card className="border-primary/10 bg-white shadow-soft"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Revenue (YTD)</p><p className="text-2xl font-bold text-primary">{money(revenueYtd)}</p><p className="text-xs text-muted-foreground">Succeeded payments</p></CardContent></Card>
+        <Card className="border-primary/10 bg-white shadow-soft"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Approved Enrollments</p><p className="text-2xl font-bold text-primary">{approvedRegistrations}</p><p className="text-xs text-muted-foreground">From registrations API</p></CardContent></Card>
+        <Card className="border-primary/10 bg-white shadow-soft"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Avg Attendance</p><p className="text-2xl font-bold text-primary">{attendanceRate}%</p><p className="text-xs text-muted-foreground">{attendance.length} records</p></CardContent></Card>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="shadow-soft">
-          <CardHeader className="pb-2"><CardTitle className="text-base font-display text-green-500">Monthly Revenue</CardTitle></CardHeader>
+        <Card className="border-primary/10 bg-white shadow-card">
+          <CardHeader className="pb-2"><CardTitle className="text-base font-display text-primary">Monthly Revenue</CardTitle></CardHeader>
           <CardContent>
             <div className="h-[250px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={revenueData}>
-                  <CartesianGrid strokeDasharray="3 3" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="month" tick={{ fontSize: 12 }} />
                   <YAxis tick={{ fontSize: 12 }} />
                   <Tooltip formatter={(value) => money(Number(value))} />
-                  <Bar dataKey="value" fill="#0D1F5C" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="value" fill="#EA987B" radius={[8, 8, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
-        <Card className="shadow-soft">
-          <CardHeader className="pb-2"><CardTitle className="text-base font-display text-green-500">New Enrollments</CardTitle></CardHeader>
+        <Card className="border-primary/10 bg-white shadow-card">
+          <CardHeader className="pb-2"><CardTitle className="text-base font-display text-primary">New Enrollments</CardTitle></CardHeader>
           <CardContent>
             <div className="h-[250px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={enrollmentData}>
-                  <CartesianGrid strokeDasharray="3 3" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="month" tick={{ fontSize: 12 }} />
                   <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
                   <Tooltip />
-                  <Area type="monotone" dataKey="value" stroke="#2A9D8F" fill="#2A9D8F" fillOpacity={0.2} />
+                  <Area type="monotone" dataKey="value" stroke="#0D1F5C" fill="#DDEFEA" fillOpacity={0.8} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -130,8 +130,8 @@ export default function Analytics() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="shadow-soft">
-          <CardHeader className="pb-2"><CardTitle className="text-base font-display text-green-500">Enrollment by Program</CardTitle></CardHeader>
+        <Card className="border-primary/10 bg-white shadow-card">
+          <CardHeader className="pb-2"><CardTitle className="text-base font-display text-primary">Enrollment by Program</CardTitle></CardHeader>
           <CardContent>
             <div className="h-[220px] w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -145,8 +145,8 @@ export default function Analytics() {
             </div>
           </CardContent>
         </Card>
-        <Card className="shadow-soft">
-          <CardHeader className="pb-2"><CardTitle className="text-base font-display text-green-500">Gender Distribution</CardTitle></CardHeader>
+        <Card className="border-primary/10 bg-white shadow-card">
+          <CardHeader className="pb-2"><CardTitle className="text-base font-display text-primary">Gender Distribution</CardTitle></CardHeader>
           <CardContent>
             <div className="h-[220px] w-full">
               <ResponsiveContainer width="100%" height="100%">

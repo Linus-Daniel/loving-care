@@ -9,7 +9,7 @@ import {
   Shield, GraduationCap, Heart, Star, ArrowRight, Calendar, MapPin,
   ChevronLeft, ChevronRight, Sparkles, Play, Users, Clock, BookOpen,
   Smile, Baby, TreePine, Music, Palette, Dumbbell, Utensils, Camera,
-  Phone, CheckCircle2
+  Phone, CheckCircle2, Bell, Sun, Zap, Waves, Leaf, User
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -183,20 +183,57 @@ function TiltCard({ children, className = "" }: { children: React.ReactNode; cla
 }
 
 // ─── Marquee Text ───
-function MarqueeText({ items }: { items: string[] }) {
+function MarqueeText({ items }: { items: { text: string; icon: any }[] }) {
   return (
-    <div className="overflow-hidden py-4 bg-secondary-50 border-y border-border">
+    <div className="overflow-hidden py-4 bg-secondary-50 border-y border-border group/marquee cursor-default">
       <motion.div
-        className="flex whitespace-nowrap"
-        animate={{ x: [0, -1920] }}
-        transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+        className="flex whitespace-nowrap w-max"
+        animate={{ x: ["0%", "-50%"] }}
+        transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
+        whileHover={{ animationPlayState: "paused" }}
       >
-        {[...items, ...items, ...items, ...items].map((item, i) => (
-          <span key={i} className="inline-flex items-center mx-8 text-sm font-medium text-primary/70">
-            <Sparkles className="w-4 h-4 mr-2 text-accent" />
-            {item}
-          </span>
-        ))}
+        <div className="flex shrink-0">
+          {[...items, ...items].map((item, i) => (
+            <span key={`m1-${i}`} className="inline-flex items-center mx-8 text-sm font-medium text-primary/70">
+              <motion.div
+                animate={{ 
+                  scale: [1, 1.1, 1],
+                  rotate: [0, 10, -10, 0]
+                }}
+                transition={{ 
+                  duration: 4, 
+                  repeat: Infinity, 
+                  delay: i * 0.1 
+                }}
+                className="mr-2 text-accent"
+              >
+                <item.icon className="w-4 h-4" />
+              </motion.div>
+              {item.text}
+            </span>
+          ))}
+        </div>
+        <div className="flex shrink-0">
+          {[...items, ...items].map((item, i) => (
+            <span key={`m2-${i}`} className="inline-flex items-center mx-8 text-sm font-medium text-primary/70">
+              <motion.div
+                animate={{ 
+                  scale: [1, 1.1, 1],
+                  rotate: [0, 10, -10, 0]
+                }}
+                transition={{ 
+                  duration: 4, 
+                  repeat: Infinity, 
+                  delay: i * 0.1 
+                }}
+                className="mr-2 text-accent"
+              >
+                <item.icon className="w-4 h-4" />
+              </motion.div>
+              {item.text}
+            </span>
+          ))}
+        </div>
       </motion.div>
     </div>
   );
@@ -316,7 +353,7 @@ function ProgramSkeletonCard() {
 
 function TestimonialSkeleton() {
   return (
-    <div className="relative max-w-3xl mx-auto">
+    <div className="relative max-w-7xl mx-auto">
       <div className="relative h-[400px]">
         <div className="absolute inset-0 bg-card rounded-3xl p-8 lg:p-12 text-center shadow-xl border border-primary-100/50">
           <div className="mb-6 flex justify-center gap-1">
@@ -395,24 +432,21 @@ function EventSkeletonCard() {
   );
 }
 
-// ─── Testimonial Carousel with Auto-play ───
+// ─── Testimonial Carousel with 3D Stack ───
 function TestimonialCarousel({ testimonials }: { testimonials: Testimonial[] }) {
   const [idx, setIdx] = useState(0);
-  const [direction, setDirection] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
   useEffect(() => {
     if (!isAutoPlaying || testimonials.length <= 1) return;
     const interval = setInterval(() => {
-      setDirection(1);
       setIdx((i) => (i + 1) % testimonials.length);
-    }, 5000);
+    }, 6000);
     return () => clearInterval(interval);
   }, [isAutoPlaying, testimonials.length]);
 
   const navigate = useCallback((dir: number) => {
     setIsAutoPlaying(false);
-    setDirection(dir);
     setIdx((i) => {
       const next = i + dir;
       if (next < 0) return testimonials.length - 1;
@@ -421,139 +455,165 @@ function TestimonialCarousel({ testimonials }: { testimonials: Testimonial[] }) 
     });
   }, [testimonials.length]);
 
-  const active = testimonials[idx];
+  if (!testimonials.length) return null;
 
-  const variants = {
-    enter: (dir: number) => ({
-      x: dir > 0 ? 300 : -300,
-      opacity: 0,
-      scale: 0.9,
-      rotateY: dir > 0 ? 15 : -15,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-      scale: 1,
-      rotateY: 0,
-    },
-    exit: (dir: number) => ({
-      x: dir > 0 ? -300 : 300,
-      opacity: 0,
-      scale: 0.9,
-      rotateY: dir > 0 ? -15 : 15,
-    }),
+  const getPosition = (index: number) => {
+    const diff = (index - idx + testimonials.length) % testimonials.length;
+    if (diff === 0) return "center";
+    if (diff === 1 || (testimonials.length === 2 && diff === 1)) return "right";
+    if (diff === testimonials.length - 1) return "left";
+    return "hidden";
   };
 
-  if (!testimonials.length) return null;
+  const variants = {
+    center: {
+      x: "0%",
+      y: 0,
+      scale: 1,
+      zIndex: 20,
+      opacity: 1,
+      rotateY: 0,
+      filter: "blur(0px)",
+    },
+    left: {
+      x: "-45%",
+      y: 0,
+      scale: 0.8,
+      zIndex: 10,
+      opacity: 0.5,
+      rotateY: 25,
+      filter: "blur(2px)",
+    },
+    right: {
+      x: "45%",
+      y: 0,
+      scale: 0.8,
+      zIndex: 10,
+      opacity: 0.5,
+      rotateY: -25,
+      filter: "blur(2px)",
+    },
+    hidden: {
+      x: "0%",
+      y: 0,
+      scale: 0.5,
+      zIndex: 0,
+      opacity: 0,
+      rotateY: 0,
+      filter: "blur(10px)",
+    }
+  };
 
   return (
     <div
-      className="relative max-w-3xl mx-auto"
+      className="relative max-w-7xl mx-auto px-4"
       onMouseEnter={() => setIsAutoPlaying(false)}
       onMouseLeave={() => setIsAutoPlaying(true)}
     >
-      <div className="relative h-[400px] perspective-[1200px]">
-        <AnimatePresence custom={direction} mode="wait">
-          <motion.div
-            key={idx}
-            custom={direction}
-            variants={variants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
-            className="absolute inset-0 bg-card rounded-3xl p-8 lg:p-12 text-center shadow-xl border border-primary-100/50"
-            style={{ transformStyle: "preserve-3d" }}
-          >
-            <div className="flex justify-center mb-6">
-              {Array.from({ length: active.rating ?? 5 }).map((_, s) => (
-                <motion.div
-                  key={s}
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.1 + s * 0.08 }}
-                >
-                  <Star className="w-6 h-6 text-accent" fill="currentColor" />
-                </motion.div>
-              ))}
-            </div>
+      <div className="relative h-[450px] lg:h-[500px] flex items-center justify-center perspective-[1500px] overflow-hidden py-10">
+        <AnimatePresence initial={false}>
+          {testimonials.map((testimonial, i) => {
+            const position = getPosition(i);
+            if (position === "hidden" && testimonials.length > 3) return null;
 
-            <motion.p
-              className="text-foreground text-lg lg:text-xl mb-8 italic leading-relaxed"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              "{active.quote}"
-            </motion.p>
+            return (
+              <motion.div
+                key={i}
+                initial="hidden"
+                animate={{
+                  ...variants[position],
+                  y: position === "center" ? [0, -10, 0] : variants[position].y
+                }}
+                exit="hidden"
+                variants={variants}
+                transition={{ 
+                  duration: 0.8, 
+                  ease: [0.32, 0.72, 0, 1],
+                  y: {
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: i * 0.2
+                  }
+                }}
+                className="absolute w-full max-w-[450px] aspect-[4/5] lg:aspect-[5/4] h-auto bg-card rounded-[2.5rem] p-8 lg:p-10 text-center shadow-2xl border border-primary-100/50 flex flex-col justify-between"
+                style={{ transformStyle: "preserve-3d" }}
+              >
+                <div>
+                  <div className="flex justify-center mb-6">
+                    {Array.from({ length: 5 }).map((_, s) => (
+                      <Star 
+                        key={s} 
+                        className={`w-5 h-5 ${s < (testimonial.rating ?? 5) ? 'text-accent fill-accent' : 'text-primary-100'}`} 
+                      />
+                    ))}
+                  </div>
 
-            <motion.div
-              className="flex items-center justify-center gap-4"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-            >
-              {active.avatarUrl ? (
-                <div className="relative">
-                  <Image
-                    src={active.avatarUrl}
-                    alt={active.parentName ?? "Parent"}
-                    width={56}
-                    height={56}
-                    className="w-14 h-14 rounded-full object-cover ring-4 ring-primary-100"
-                  />
-                  <motion.div
-                    className="absolute -bottom-1 -right-1 w-5 h-5 bg-accent rounded-full flex items-center justify-center"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.7, type: "spring" }}
-                  >
-                    <CheckCircle2 className="w-3 h-3 text-white" />
-                  </motion.div>
+                  <p className="text-foreground text-base lg:text-lg mb-6 italic leading-relaxed line-clamp-6">
+                    "{testimonial.quote}"
+                  </p>
                 </div>
-              ) : (
-                <div className="w-14 h-14 rounded-full bg-primary-100 ring-4 ring-primary-50" />
-              )}
-              <div className="text-left">
-                <p className="text-primary-800 font-bold text-base">{active.parentName}</p>
-                <p className="text-primary-500/60 text-sm">Verified Parent at Loving Family</p>
-              </div>
-            </motion.div>
-          </motion.div>
+
+                <div className="flex flex-col items-center gap-4">
+                  <div className="relative">
+                    {testimonial.avatarUrl ? (
+                      <Image
+                        src={testimonial.avatarUrl}
+                        alt={testimonial.parentName ?? "Parent"}
+                        width={64}
+                        height={64}
+                        className="w-16 h-16 rounded-full object-cover ring-4 ring-primary-50"
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-full bg-primary-100 ring-4 ring-primary-50 flex items-center justify-center">
+                        <User className="w-8 h-8 text-primary-400" />
+                      </div>
+                    )}
+                    <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-accent rounded-full flex items-center justify-center border-2 border-white">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-primary-800 font-bold text-base">{testimonial.parentName}</p>
+                    <p className="text-primary-500/60 text-xs uppercase tracking-wider font-semibold">Verified Parent</p>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
         </AnimatePresence>
       </div>
 
-      <div className="flex justify-center items-center gap-4 mt-8">
+      <div className="flex justify-center items-center gap-6 mt-8">
         <MagneticButton
-          className="p-3 rounded-full bg-primary-50 hover:bg-primary-100 text-primary-600 transition-colors"
+          className="p-4 rounded-full bg-white shadow-md hover:shadow-lg text-primary-600 transition-all border border-border"
           onClick={() => navigate(-1)}
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft className="w-6 h-6" />
         </MagneticButton>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2.5">
           {testimonials.map((_, i) => (
             <button
               key={i}
               onClick={() => {
                 setIsAutoPlaying(false);
-                setDirection(i > idx ? 1 : -1);
                 setIdx(i);
               }}
-              className={`transition-all duration-300 rounded-full ${
+              className={`transition-all duration-500 rounded-full ${
                 i === idx
-                  ? "w-8 h-2 bg-accent"
-                  : "w-2 h-2 bg-primary-200 hover:bg-primary-300"
+                  ? "w-10 h-2.5 bg-accent"
+                  : "w-2.5 h-2.5 bg-primary-200 hover:bg-primary-300"
               }`}
             />
           ))}
         </div>
 
         <MagneticButton
-          className="p-3 rounded-full bg-primary-50 hover:bg-primary-100 text-primary-600 transition-colors"
+          className="p-4 rounded-full bg-white shadow-md hover:shadow-lg text-primary-600 transition-all border border-border"
           onClick={() => navigate(1)}
         >
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight className="w-6 h-6" />
         </MagneticButton>
       </div>
     </div>
@@ -655,7 +715,7 @@ function EventCard({ event, index }: { event: EventItem; index: number }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-accent to-secondary-500 transform origin-top transition-transform duration-500 group-hover:scale-y-100 scale-y-0" />
+      <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-accent-200 to-secondary-500 transform origin-top transition-transform duration-500 group-hover:scale-y-100 scale-y-0" />
 
       <div className="p-6 pl-7">
         <div className="flex items-start justify-between mb-4">
@@ -670,7 +730,7 @@ function EventCard({ event, index }: { event: EventItem; index: number }) {
           </motion.div>
 
           <motion.div
-            className="text-center bg-gradient-to-br from-accent to-secondary-500 rounded-xl px-4 py-2 shadow-lg"
+            className="text-center bg-gradient-to-br from-accent-100 via-accent-200 to-secondary-500 rounded-xl px-4 py-2 shadow-lg"
             animate={{ scale: isHovered ? 1.05 : 1 }}
             transition={{ duration: 0.3 }}
           >
@@ -899,7 +959,7 @@ export default function Home() {
                 transition={{ delay: 0.6, duration: 0.6 }}
               >
                 <MagneticButton
-                  className="bg-accent text-primary-900 hover:bg-accent-200 font-bold rounded-full px-8 py-4 text-base shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
+                  className="bg-accent text-primary-900 hover:bg-primary-600 hover:text-white font-bold rounded-full px-8 py-4 text-base shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
                   onClick={() => router.push('/register')}
                 >
                   Enroll Now
@@ -931,7 +991,7 @@ export default function Home() {
                   { icon: Users, label: "Small groups" },
                   { icon: BookOpen, label: "Play-based learning" },
                 ].map((item) => (
-                  <div key={item.label} className="border border-border bg-background/75 px-4 py-3 text-primary shadow-sm backdrop-blur-sm">
+                  <div key={item.label} className="border rounded-sm border-border bg-background/75 px-4 py-3 text-primary shadow-sm backdrop-blur-sm">
                     <item.icon className="mb-2 h-5 w-5 text-accent" />
                     <p className="text-sm font-medium leading-snug">{item.label}</p>
                   </div>
@@ -965,16 +1025,16 @@ export default function Home() {
 
       {/* Marquee */}
       <MarqueeText items={[
-        "Nurturing Environment",
-        "Qualified Educators",
-        "Safe & Secure",
-        "Play-Based Learning",
-        "Small Class Sizes",
-        "Healthy Meals",
-        "Outdoor Activities",
-        "Creative Arts",
-        "STEM for Kids",
-        "Parent Updates Daily",
+        { text: "Nurturing Environment", icon: Heart },
+        { text: "Qualified Educators", icon: GraduationCap },
+        { text: "Safe & Secure", icon: Shield },
+        { text: "Play-Based Learning", icon: Baby },
+        { text: "Small Class Sizes", icon: Users },
+        { text: "Healthy Meals", icon: Utensils },
+        { text: "Outdoor Activities", icon: TreePine },
+        { text: "Creative Arts", icon: Palette },
+        { text: "STEM for Kids", icon: Zap },
+        { text: "Parent Updates Daily", icon: Bell },
       ]} />
 
       {/* ═══════ STATS BAR ═══════ */}

@@ -1,3 +1,5 @@
+import type { AdminNotificationInput } from "@/lib/server/notifications";
+
 type PaymentIntentLike = {
   id: string;
   latest_charge?: string | { receipt_url?: string | null } | null;
@@ -69,7 +71,7 @@ export async function handleStripeWebhookEvent({
   stripe,
 }: {
   event: StripeEventLike;
-  notifyAdmins: (input: { title: string; message: string; type: string; link: string }) => Promise<unknown>;
+  notifyAdmins: (input: AdminNotificationInput) => Promise<unknown>;
   prisma: StripeWebhookPrismaClient;
   sendReceiptEmail: (input: {
     parentName: string;
@@ -84,7 +86,7 @@ export async function handleStripeWebhookEvent({
   stripe: StripeChargeClient;
 }) {
   if (event.type === "payment_intent.succeeded") {
-    const paymentIntent = event.data.object;
+    const paymentIntent = event.data.object as PaymentIntentLike;
     const receiptUrl = await receiptUrlForPaymentIntent(paymentIntent, stripe);
     const payment = await prisma.payment.findUnique({
       where: { stripePaymentId: paymentIntent.id },
@@ -121,7 +123,7 @@ export async function handleStripeWebhookEvent({
   }
 
   if (event.type === "payment_intent.payment_failed") {
-    const paymentIntent = event.data.object;
+    const paymentIntent = event.data.object as PaymentIntentLike;
     await prisma.payment.updateMany({
       where: { stripePaymentId: paymentIntent.id },
       data: { status: "FAILED" },
@@ -129,7 +131,7 @@ export async function handleStripeWebhookEvent({
   }
 
   if (event.type === "invoice.paid") {
-    const invoice = event.data.object;
+    const invoice = event.data.object as InvoiceLike;
     const invoiceId = invoice.metadata?.invoiceId;
     if (invoiceId) {
       await prisma.invoice.updateMany({
@@ -140,7 +142,7 @@ export async function handleStripeWebhookEvent({
   }
 
   if (event.type === "invoice.payment_failed") {
-    const invoice = event.data.object;
+    const invoice = event.data.object as InvoiceLike;
     const invoiceId = invoice.metadata?.invoiceId;
     if (invoiceId) {
       await prisma.invoice.updateMany({

@@ -51,7 +51,7 @@ export default function AdminResources() {
         header: "Name",
         cell: ({ row }) => (
           <div className="flex items-center gap-2">
-            <FileText className="h-4 w-4 text-green-500" />
+            <FileText className="h-4 w-4 text-primary" />
             <span className="font-medium">{row.original.name}</span>
           </div>
         ),
@@ -87,7 +87,7 @@ export default function AdminResources() {
         action={
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-secondary font-semibold text-green-500 hover:bg-secondary-400">
+              <Button className="bg-accent font-semibold text-white shadow-soft hover:bg-accent-400">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Resource
               </Button>
@@ -114,8 +114,8 @@ export default function AdminResources() {
                   }}
                   appearance={{
                     container: "border-border bg-muted/40",
-                    button: "bg-green-500 text-white hover:bg-green-500/90",
-                    label: "text-green-500",
+                    button: "bg-accent text-white hover:bg-accent-400",
+                    label: "text-primary",
                   }}
                 />
                 <div className="space-y-2"><Label>Name</Label><Input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} /></div>
@@ -125,7 +125,7 @@ export default function AdminResources() {
                   <div className="space-y-2"><Label>Category</Label><Input value={form.category} onChange={(event) => setForm({ ...form, category: event.target.value })} /></div>
                   <div className="space-y-2"><Label>Visibility</Label><Input value={form.visibility} onChange={(event) => setForm({ ...form, visibility: event.target.value })} /></div>
                 </div>
-                <Button className="w-full bg-green-500 text-white" disabled={createResource.isPending || !form.name || !form.fileUrl} onClick={submit}>
+                <Button className="w-full bg-accent text-white hover:bg-accent-400" disabled={createResource.isPending || !form.name || !form.fileUrl} onClick={submit}>
                   {createResource.isPending ? "Saving..." : "Save Resource"}
                 </Button>
               </div>

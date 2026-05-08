@@ -348,19 +348,8 @@ export default function About() {
         </div>
       </section>
 
-      {/* Marquee */}
-      <MarqueeText items={[
-        "Nurturing Environment",
-        "Qualified Educators",
-        "Safe & Secure",
-        "Play-Based Learning",
-        "Small Class Sizes",
-        "Healthy Meals",
-        "Outdoor Activities",
-        "Creative Arts",
-        "STEM for Kids",
-        "Parent Updates Daily",
-      ]} />
+     
+     
 
       {/* ═══════ QUICK STATS ═══════ */}
       <section className="bg-card border-b border-border">
@@ -732,7 +721,7 @@ export default function About() {
                         className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0"
                       >
                         <div className="flex gap-2">
-                          {member.specialties?.slice(0, 3).map((spec: string) => (
+                          {[member.role, member.class].filter((spec): spec is string => Boolean(spec)).slice(0, 3).map((spec) => (
                             <span key={spec} className="text-xs bg-card/90 text-primary-700 px-2 py-1 rounded-full backdrop-blur-sm">
                               {spec}
                             </span>

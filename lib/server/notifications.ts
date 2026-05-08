@@ -1,8 +1,10 @@
+import type { Role } from "@prisma/client";
+
 import { prisma } from "@/lib/prisma";
 
-const ADMIN_ROLES = ["ADMIN", "SUPER_ADMIN", "STAFF"] as const;
+const ADMIN_ROLES: Role[] = ["ADMIN", "SUPER_ADMIN", "STAFF"];
 
-type AdminNotificationInput = {
+export type AdminNotificationInput = {
   title: string;
   message: string;
   type: "payment" | "message" | "registration" | "enrollment" | "support" | "announcement";

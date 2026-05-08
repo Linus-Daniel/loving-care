@@ -88,11 +88,11 @@ export default function RolesPage() {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {counts.map((role) => (
-          <Card key={role.name} className="shadow-soft">
+          <Card key={role.name} className="border-primary/10 bg-white shadow-soft">
             <CardContent className="p-4">
               <div className="mb-3 flex items-center gap-2">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-500/10">
-                  <ShieldCheck className="h-4 w-4 text-green-500" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-surface text-primary">
+                  <ShieldCheck className="h-4 w-4 text-primary" />
                 </div>
                 <div>
                   <p className="text-sm font-medium">{role.label}</p>

@@ -1,8 +1,9 @@
 "use client";
 
-import { Download, FileText, Loader2, Pencil, Pill, Stethoscope, User } from "lucide-react";
+import { Download, FileText, Loader2, Pill, Stethoscope, UserRound } from "lucide-react";
 import { useState } from "react";
 
+import { RegisterChildDialog } from "@/components/parent/RegisterChildDialog";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -11,8 +12,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useChildren } from "@/hooks/useChildren";
 import { useResources } from "@/hooks/useResources";
-
-import { RegisterChildDialog } from "@/components/parent/RegisterChildDialog";
 
 function ageFromDob(dateOfBirth: string) {
   const dob = new Date(dateOfBirth);
@@ -23,167 +22,232 @@ function ageFromDob(dateOfBirth: string) {
   return age;
 }
 
+function formatDate(value: string) {
+  return new Date(value).toLocaleDateString("en-NG", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 export default function ChildProfilePage() {
   const [activeTab, setActiveTab] = useState("overview");
+  const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
   const { data: children = [], isLoading } = useChildren();
   const { data: documents = [], isLoading: documentsLoading } = useResources({ category: "Forms" });
-  const child = children[0];
+  const child = children.find((item) => item.id === selectedChildId) ?? children[0];
 
   if (isLoading) {
     return (
-      <div className="flex h-[400px] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-green-500" />
+      <div className="flex min-h-[420px] items-center justify-center rounded-[2rem] border border-primary/10 bg-white shadow-card">
+        <Loader2 className="h-8 w-8 animate-spin text-accent" />
       </div>
     );
   }
 
   if (!child) {
     return (
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-xl font-display font-bold text-green-500 lg:text-2xl">Child Profile</h1>
-          <p className="text-sm text-muted-foreground">Enroll your child to view their profile, attendance, and records.</p>
-        </div>
+      <div className="mx-auto max-w-5xl space-y-6">
+        <section className="rounded-[2rem] border border-primary/10 bg-white p-6 shadow-card sm:p-8">
+          <h1 className="font-display text-3xl font-bold text-primary">Child Profile</h1>
+          <p className="mt-2 text-muted-foreground">Enroll your child to view their profile, attendance, and records.</p>
+        </section>
         <EmptyState
           title="No child profile found"
-          description="You haven't enrolled any children yet. Click the button below to start the enrollment process."
+          description="You haven't enrolled any children yet. Start the enrollment process to connect a child profile to your account."
           action={<RegisterChildDialog />}
         />
       </div>
     );
   }
 
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-display font-bold text-green-500 lg:text-2xl">Child Profile</h1>
-        <p className="text-sm text-muted-foreground">View your child's personal, guardian, medical, and document records.</p>
-      </div>
+  const infoItems = [
+    ["Full Name", `${child.firstName} ${child.lastName}`],
+    ["Date of Birth", formatDate(child.dateOfBirth)],
+    ["Gender", child.gender],
+    ["Program", child.program],
+    ["Enrollment Date", formatDate(child.enrollmentDate)],
+  ];
 
-      <Card className="overflow-hidden shadow-soft">
-        <div className="bg-green-500 p-6 lg:p-8">
-          <div className="flex flex-col items-center gap-4 sm:flex-row">
-            <Avatar className="h-20 w-20 border-4 border-secondary">
-              <AvatarImage src={child.photo ?? undefined} />
-              <AvatarFallback className="text-2xl">{child.firstName.charAt(0)}{child.lastName.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <div className="text-center sm:text-left">
-              <h2 className="text-xl font-display font-bold text-white">{child.firstName} {child.lastName}</h2>
-              <p className="text-sm text-white/70">
-                Age {ageFromDob(child.dateOfBirth)} • {child.program} • Enrolled {new Date(child.enrollmentDate).toLocaleDateString("en-NG")}
-              </p>
-              <StatusBadge status={child.status} className="mt-2 bg-secondary text-green-500" />
+  const guardianItems = [
+    ["Primary Guardian", child.parent?.name ?? "Not linked"],
+    ["Phone", child.parent?.phone ?? "Not provided"],
+    ["Email", child.parent?.email ?? "Not provided"],
+  ];
+
+  return (
+    <div className="mx-auto max-w-7xl space-y-6">
+      <section className="overflow-hidden rounded-[2rem] border border-primary/10 bg-white shadow-card">
+        <div className="grid gap-0 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="p-6 sm:p-8">
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+              <Avatar className="h-24 w-24 border-4 border-secondary-50 shadow-soft">
+                <AvatarImage src={child.photo ?? undefined} />
+                <AvatarFallback className="bg-secondary-100 text-2xl font-bold text-primary">
+                  {child.firstName.charAt(0)}
+                  {child.lastName.charAt(0)}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">Child Profile</p>
+                <h1 className="mt-2 font-display text-3xl font-bold text-primary sm:text-4xl">
+                  {child.firstName} {child.lastName}
+                </h1>
+                <p className="mt-2 text-muted-foreground">
+                  Age {ageFromDob(child.dateOfBirth)} • {child.program} • Enrolled {formatDate(child.enrollmentDate)}
+                </p>
+                <StatusBadge status={child.status} className="mt-3" />
+              </div>
             </div>
-            <Button variant="outline" className="border-white/30 text-white hover:secondary-50/10 sm:ml-auto">
-              <Pencil className="mr-2 h-4 w-4" />
-              Edit Profile
-            </Button>
+          </div>
+
+          <div className="border-t border-primary/10 bg-secondary-50 p-6 sm:p-8 lg:border-l lg:border-t-0">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">Children</p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {children.map((item) => {
+                const active = item.id === child.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => setSelectedChildId(item.id)}
+                    className={`rounded-2xl px-4 py-2 text-sm font-bold transition-colors ${
+                      active ? "bg-accent text-white shadow-soft" : "bg-white text-primary hover:bg-secondary-100"
+                    }`}
+                  >
+                    {item.firstName}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="mt-5">
+              <RegisterChildDialog />
+            </div>
           </div>
         </div>
+      </section>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="p-6">
-          <TabsList className="bg-muted">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="medical">Medical</TabsTrigger>
-            <TabsTrigger value="documents">Documents</TabsTrigger>
-          </TabsList>
+      <Card className="border-primary/10 bg-white shadow-card">
+        <CardContent className="p-4 sm:p-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+            <TabsList className="h-auto flex-wrap rounded-2xl bg-secondary-50 p-1">
+              <TabsTrigger value="overview" className="rounded-xl">Overview</TabsTrigger>
+              <TabsTrigger value="medical" className="rounded-xl">Medical</TabsTrigger>
+              <TabsTrigger value="documents" className="rounded-xl">Documents</TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="overview" className="mt-6">
-            <div className="grid gap-6 sm:grid-cols-2">
-              <div className="space-y-4">
-                <h3 className="flex items-center gap-2 font-display font-semibold text-green-500">
-                  <User className="h-4 w-4 text-teal" />
-                  Basic Information
-                </h3>
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between gap-4"><span className="text-muted-foreground">Full Name</span><span className="font-medium">{child.firstName} {child.lastName}</span></div>
-                  <div className="flex justify-between gap-4"><span className="text-muted-foreground">Date of Birth</span><span className="font-medium">{new Date(child.dateOfBirth).toLocaleDateString("en-NG")}</span></div>
-                  <div className="flex justify-between gap-4"><span className="text-muted-foreground">Gender</span><span className="font-medium">{child.gender}</span></div>
-                  <div className="flex justify-between gap-4"><span className="text-muted-foreground">Program</span><span className="font-medium">{child.program}</span></div>
-                  <div className="flex justify-between gap-4"><span className="text-muted-foreground">Enrollment Date</span><span className="font-medium">{new Date(child.enrollmentDate).toLocaleDateString("en-NG")}</span></div>
+            <TabsContent value="overview" className="mt-0">
+              <div className="grid gap-5 lg:grid-cols-2">
+                <InfoPanel title="Basic Information" icon={UserRound} items={infoItems} />
+                <InfoPanel title="Guardian Information" icon={UserRound} items={guardianItems} />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="medical" className="mt-0">
+              <div className="grid gap-4 md:grid-cols-2">
+                <MedicalCard
+                  title="Medical Conditions"
+                  icon={Stethoscope}
+                  value={child.medicalInfo?.conditions ?? "No known medical conditions."}
+                />
+                <MedicalCard title="Medications" icon={Pill} value={child.medicalInfo?.medications ?? "No regular medications."} />
+                <MedicalCard title="Allergies" icon={FileText} value={child.medicalInfo?.allergies ?? "No allergies recorded."} />
+                <Card className="border-primary/10 bg-[#FFF9F0] shadow-soft">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 font-display text-base text-primary">
+                      <UserRound className="h-4 w-4 text-accent" />
+                      Doctor
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="font-bold text-primary">{child.medicalInfo?.doctorName ?? "Not provided"}</p>
+                    <p className="text-sm text-muted-foreground">{child.medicalInfo?.doctorPhone ?? "No doctor phone recorded"}</p>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="documents" className="mt-0">
+              {documentsLoading ? (
+                <div className="space-y-3">
+                  {Array.from({ length: 3 }).map((_, index) => (
+                    <div key={index} className="h-20 animate-pulse rounded-3xl bg-secondary-50" />
+                  ))}
                 </div>
-              </div>
-              <div className="space-y-4">
-                <h3 className="font-display font-semibold text-green-500">Guardian Information</h3>
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between gap-4"><span className="text-muted-foreground">Primary Guardian</span><span className="font-medium">{child.parent?.name ?? "Not linked"}</span></div>
-                  <div className="flex justify-between gap-4"><span className="text-muted-foreground">Phone</span><span className="font-medium">{child.parent?.phone ?? "Not provided"}</span></div>
-                  <div className="flex justify-between gap-4"><span className="text-muted-foreground">Email</span><span className="font-medium">{child.parent?.email ?? "Not provided"}</span></div>
-                </div>
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="medical" className="mt-6">
-            <div className="grid gap-6 sm:grid-cols-2">
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-sm font-display"><Stethoscope className="h-4 w-4 text-teal" /> Medical Conditions</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">{child.medicalInfo?.conditions ?? "No known medical conditions."}</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-sm font-display"><Pill className="h-4 w-4 text-warning" /> Medications</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">{child.medicalInfo?.medications ?? "No regular medications."}</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-sm font-display"><FileText className="h-4 w-4 text-green-500" /> Allergies</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">{child.medicalInfo?.allergies ?? "No allergies recorded."}</p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-sm font-display"><User className="h-4 w-4 text-success" /> Doctor</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm font-medium">{child.medicalInfo?.doctorName ?? "Not provided"}</p>
-                  <p className="text-xs text-muted-foreground">{child.medicalInfo?.doctorPhone ?? "No doctor phone recorded"}</p>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="documents" className="mt-6">
-            {documentsLoading ? (
-              <div className="space-y-3">
-                {Array.from({ length: 3 }).map((_, index) => <div key={index} className="h-20 animate-pulse rounded-lg bg-muted" />)}
-              </div>
-            ) : documents.length ? (
-              <div className="space-y-3">
-              {documents.map((doc) => (
-                <div key={doc.id} className="flex items-center justify-between rounded-lg bg-muted p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/10">
-                      <FileText className="h-5 w-5 text-green-500" />
+              ) : documents.length ? (
+                <div className="grid gap-3 md:grid-cols-2">
+                  {documents.map((doc) => (
+                    <div key={doc.id} className="flex items-center justify-between gap-3 rounded-3xl border border-primary/10 bg-[#FFF9F0] p-4">
+                      <div className="flex min-w-0 items-center gap-3">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-accent-50">
+                          <FileText className="h-5 w-5 text-accent" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="truncate font-bold text-primary">{doc.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {doc.fileType} • {new Date(doc.createdAt).toLocaleDateString("en-NG")}
+                          </p>
+                        </div>
+                      </div>
+                      <Button variant="ghost" size="sm" asChild>
+                        <a href={doc.fileUrl} target="_blank" rel="noreferrer" aria-label={`Download ${doc.name}`}>
+                          <Download className="h-4 w-4" />
+                        </a>
+                      </Button>
                     </div>
-                    <div>
-                      <p className="text-sm font-medium">{doc.name}</p>
-                      <p className="text-xs text-muted-foreground">{doc.fileType} • {new Date(doc.createdAt).toLocaleDateString("en-NG")}</p>
-                    </div>
-                  </div>
-                  <Button variant="ghost" size="sm" asChild>
-                    <a href={doc.fileUrl} target="_blank" rel="noreferrer" aria-label={`Download ${doc.name}`}>
-                    <Download className="h-4 w-4" />
-                    </a>
-                  </Button>
+                  ))}
                 </div>
-              ))}
-            </div>
-            ) : (
-              <EmptyState title="No documents available" description="Forms and child documents shared by the school will appear here." />
-            )}
-          </TabsContent>
-        </Tabs>
+              ) : (
+                <EmptyState title="No documents available" description="Forms and child documents shared by the school will appear here." />
+              )}
+            </TabsContent>
+          </Tabs>
+        </CardContent>
       </Card>
     </div>
+  );
+}
+
+function InfoPanel({
+  icon: Icon,
+  items,
+  title,
+}: {
+  icon: typeof UserRound;
+  items: string[][];
+  title: string;
+}) {
+  return (
+    <Card className="border-primary/10 bg-[#FFF9F0] shadow-soft">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 font-display text-lg text-primary">
+          <Icon className="h-5 w-5 text-accent" />
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {items.map(([label, value]) => (
+          <div key={label} className="flex justify-between gap-4 rounded-2xl bg-white px-4 py-3 text-sm">
+            <span className="text-muted-foreground">{label}</span>
+            <span className="text-right font-bold text-primary">{value}</span>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
+
+function MedicalCard({ icon: Icon, title, value }: { icon: typeof Stethoscope; title: string; value: string }) {
+  return (
+    <Card className="border-primary/10 bg-[#FFF9F0] shadow-soft">
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 font-display text-base text-primary">
+          <Icon className="h-4 w-4 text-accent" />
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm leading-6 text-muted-foreground">{value}</p>
+      </CardContent>
+    </Card>
   );
 }

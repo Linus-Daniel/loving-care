@@ -19,6 +19,7 @@ export const aboutContent = defineType({
         { name: "year", type: "string" },
         { name: "title", type: "string" },
         { name: "description", type: "text" },
+        { name: "icon", type: "string" },
       ] }],
     }),
     defineField({

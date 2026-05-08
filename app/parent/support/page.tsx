@@ -1,20 +1,19 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { MessageSquare, Plus } from "lucide-react";
+import { HelpCircle, MessageSquare, Plus, Send } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import { EmptyState } from "@/components/shared/EmptyState";
+import { LoadingTable } from "@/components/shared/LoadingTable";
+import { StatusBadge } from "@/components/shared/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { EmptyState } from "@/components/shared/EmptyState";
-import { LoadingTable } from "@/components/shared/LoadingTable";
-import { PageHeader } from "@/components/shared/PageHeader";
-import { StatusBadge } from "@/components/shared/StatusBadge";
 import { apiFetch, apiGet } from "@/lib/client/api";
 
 type TicketRecord = {
@@ -38,6 +37,8 @@ export default function Support() {
     queryFn: () => apiGet<TicketRecord[]>("/api/support").then((res) => res.data ?? []),
   });
 
+  const openTickets = tickets.filter((ticket) => ticket.status !== "CLOSED").length;
+
   const createTicket = useMutation({
     mutationFn: () =>
       apiFetch<TicketRecord>("/api/support", {
@@ -55,43 +56,68 @@ export default function Support() {
   });
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Support & Help Tickets"
-        description="Get help with any questions or concerns"
-        action={
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-secondary font-semibold text-green-500 hover:bg-secondary-400">
-                <Plus className="mr-2 h-4 w-4" />
-                Open Ticket
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create Support Ticket</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 py-4">
-                <div className="space-y-2">
-                  <Label>Subject</Label>
-                  <Input value={subject} onChange={(event) => setSubject(event.target.value)} placeholder="Brief description" />
-                </div>
-                <div className="space-y-2">
-                  <Label>Description</Label>
-                  <Textarea value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Describe your issue in detail..." rows={4} />
-                </div>
-                <Button className="w-full bg-green-500 text-white" onClick={() => createTicket.mutate()} disabled={createTicket.isPending || !subject || !description}>
-                  {createTicket.isPending ? "Submitting..." : "Submit Ticket"}
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        }
-      />
+    <div className="mx-auto max-w-7xl space-y-6">
+      <section className="overflow-hidden rounded-[2rem] border border-primary/10 bg-white shadow-card">
+        <div className="grid gap-0 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="p-6 sm:p-8">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-50 text-accent">
+              <HelpCircle className="h-6 w-6" />
+            </div>
+            <h1 className="font-display text-3xl font-bold text-primary sm:text-4xl">Support & Help Tickets</h1>
+            <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
+              Ask questions, report concerns, and keep track of replies from the school team.
+            </p>
+          </div>
+          <div className="border-t border-primary/10 bg-secondary-50 p-6 sm:p-8 lg:border-l lg:border-t-0">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">Open Tickets</p>
+            <p className="mt-3 font-display text-4xl font-bold text-primary">{openTickets}</p>
+            <p className="text-sm text-muted-foreground">active conversation{openTickets === 1 ? "" : "s"}</p>
+          </div>
+        </div>
+      </section>
 
-      <Card className="shadow-card">
+      <div className="flex justify-end">
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-accent text-white hover:bg-accent-400">
+              <Plus className="h-4 w-4" />
+              Open Ticket
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="font-display text-primary">Create Support Ticket</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label>Subject</Label>
+                <Input value={subject} onChange={(event) => setSubject(event.target.value)} placeholder="Brief description" />
+              </div>
+              <div className="space-y-2">
+                <Label>Description</Label>
+                <Textarea
+                  value={description}
+                  onChange={(event) => setDescription(event.target.value)}
+                  placeholder="Describe your issue in detail..."
+                  rows={4}
+                />
+              </div>
+              <Button
+                className="w-full bg-accent text-white hover:bg-accent-400"
+                onClick={() => createTicket.mutate()}
+                disabled={createTicket.isPending || !subject || !description}
+              >
+                {createTicket.isPending ? "Submitting..." : "Submit Ticket"}
+                <Send className="h-4 w-4" />
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      <Card className="border-primary/10 bg-white shadow-card">
         <CardHeader className="pb-3">
-          <CardTitle className="font-display text-base text-green-500">Your Tickets</CardTitle>
+          <CardTitle className="font-display text-xl text-primary">Your Tickets</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -99,40 +125,34 @@ export default function Support() {
           ) : tickets.length === 0 ? (
             <EmptyState title="No tickets yet" description="Open a ticket when you need help from the school team." />
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="px-3 py-2 text-left font-medium text-muted-foreground">ID</th>
-                    <th className="px-3 py-2 text-left font-medium text-muted-foreground">Subject</th>
-                    <th className="px-3 py-2 text-left font-medium text-muted-foreground">Priority</th>
-                    <th className="px-3 py-2 text-left font-medium text-muted-foreground">Status</th>
-                    <th className="px-3 py-2 text-left font-medium text-muted-foreground">Date</th>
-                    <th className="px-3 py-2 text-right font-medium text-muted-foreground">Replies</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {tickets.map((ticket) => (
-                    <tr key={ticket.id} className="border-b border-border/50">
-                      <td className="px-3 py-3 font-mono text-xs">{ticket.id.slice(0, 8)}</td>
-                      <td className="px-3 py-3">{ticket.subject}</td>
-                      <td className="px-3 py-3">
-                        <StatusBadge status={ticket.priority} />
-                      </td>
-                      <td className="px-3 py-3">
-                        <StatusBadge status={ticket.status} />
-                      </td>
-                      <td className="px-3 py-3 text-muted-foreground">{new Date(ticket.createdAt).toLocaleDateString("en-NG")}</td>
-                      <td className="px-3 py-3 text-right">
-                        <Button variant="ghost" size="sm">
-                          <MessageSquare className="mr-1 h-4 w-4" />
-                          {ticket.replies.length}
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="grid gap-3">
+              {tickets.map((ticket) => (
+                <div
+                  key={ticket.id}
+                  className="grid gap-4 rounded-3xl border border-primary/10 bg-[#FFF9F0] p-4 md:grid-cols-[1fr_auto]"
+                >
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="rounded-full bg-white px-2 py-1 font-mono text-[10px] font-bold text-muted-foreground">
+                        #{ticket.id.slice(0, 8)}
+                      </span>
+                      <StatusBadge status={ticket.priority} />
+                      <StatusBadge status={ticket.status} />
+                    </div>
+                    <p className="mt-3 font-display text-lg font-bold text-primary">{ticket.subject}</p>
+                    <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{ticket.description}</p>
+                    <p className="mt-3 text-xs text-muted-foreground">
+                      Opened {new Date(ticket.createdAt).toLocaleDateString("en-NG")}
+                    </p>
+                  </div>
+                  <div className="flex items-center md:justify-end">
+                    <Button variant="outline" className="bg-white">
+                      <MessageSquare className="h-4 w-4" />
+                      {ticket.replies.length} replies
+                    </Button>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </CardContent>

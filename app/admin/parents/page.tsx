@@ -66,7 +66,7 @@ export default function ManageParents() {
         title="Manage Parents"
         description="View and manage parent accounts"
         action={
-          <Button className="bg-secondary font-semibold text-green-500 hover:bg-secondary-400">
+          <Button className="bg-accent text-white hover:bg-accent-400">
             <Plus className="mr-2 h-4 w-4" />
             Add Parent
           </Button>

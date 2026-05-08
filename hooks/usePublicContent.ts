@@ -35,7 +35,7 @@ export type PublicAboutContent = {
   missionBody?: string | null;
   visionTitle?: string | null;
   visionBody?: string | null;
-  timeline?: { year?: string; title?: string; description?: string }[];
+  timeline?: { year?: string; title?: string; description?: string; icon?: string }[];
   values?: { title?: string; description?: string; icon?: string }[];
   awards?: string[];
 } | null;

@@ -33,16 +33,16 @@ export default function PaymentDetailPage() {
   return (
     <div className="space-y-6">
       <PageHeader title="Payment Detail" description="Inspect transaction metadata and payment status." />
-      <Card>
+      <Card className="border-primary/10 bg-white shadow-card">
         <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="font-display text-2xl font-bold text-green-500">{money(payment.amount, payment.currency)}</p>
+            <p className="font-display text-2xl font-bold text-primary">{money(payment.amount, payment.currency)}</p>
             <p className="text-sm text-muted-foreground">{payment.description}</p>
           </div>
           <StatusBadge status={payment.status} />
         </CardContent>
       </Card>
-      <Card>
+      <Card className="border-primary/10 bg-white shadow-card">
         <CardHeader><CardTitle>Transaction Metadata</CardTitle></CardHeader>
         <CardContent className="grid gap-4 text-sm sm:grid-cols-2">
           <div><p className="text-muted-foreground">Parent</p><p className="font-medium">{payment.user?.name ?? "Unknown"}</p></div>
@@ -54,7 +54,7 @@ export default function PaymentDetailPage() {
         </CardContent>
       </Card>
       <div className="flex flex-wrap gap-2">
-        <Button variant="outline" onClick={() => toast.info("Receipt PDF generation queued")}><FileDown className="mr-2 h-4 w-4" /> Download Receipt</Button>
+        <Button className="border-primary/15 text-primary hover:bg-surface/70" variant="outline" onClick={() => toast.info("Receipt PDF generation queued")}><FileDown className="mr-2 h-4 w-4" /> Download Receipt</Button>
         <Button variant="destructive" onClick={() => setRefundOpen(true)} disabled={payment.status === "REFUNDED"}>
           <RotateCcw className="mr-2 h-4 w-4" />
           Issue Refund

@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, Paperclip, PenSquare, Send, Users } from "lucide-react";
+import { Loader2, Paperclip, PenSquare, Send } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { LoadingTable } from "@/components/shared/LoadingTable";
@@ -137,7 +137,7 @@ export default function AdminMessagesPage() {
         action={
           <Button
             size="sm"
-            className="bg-green-500 text-white hover:bg-green-500-600 gap-1.5"
+            className="gap-1.5 bg-accent text-white shadow-soft hover:bg-accent-400"
             onClick={() => setShowNewChat(true)}
           >
             <PenSquare className="h-4 w-4" />
@@ -150,7 +150,7 @@ export default function AdminMessagesPage() {
       <Dialog open={showNewChat} onOpenChange={setShowNewChat}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="font-display text-green-500">Start a New Conversation</DialogTitle>
+            <DialogTitle className="font-display text-primary">Start a New Conversation</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
@@ -202,8 +202,8 @@ export default function AdminMessagesPage() {
                         key={id}
                         type="button"
                         onClick={() => selectRecipient(id, name)}
-                        className={`flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm transition-colors hover:bg-muted ${
-                          newChatRecipientId === id ? "bg-green-500/10 text-green-500" : ""
+                        className={`flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm transition-colors hover:bg-surface/70 ${
+                          newChatRecipientId === id ? "bg-surface text-primary" : ""
                         }`}
                       >
                         <Avatar className="h-8 w-8 shrink-0">
@@ -215,7 +215,7 @@ export default function AdminMessagesPage() {
                           <p className="truncate text-xs text-muted-foreground">{sub}</p>
                         </div>
                         {newChatRecipientId === id && (
-                          <Badge className="ml-auto shrink-0 bg-green-500 text-white text-[10px]">
+                          <Badge className="ml-auto shrink-0 bg-primary text-white text-[10px]">
                             Selected
                           </Badge>
                         )}
@@ -246,7 +246,7 @@ export default function AdminMessagesPage() {
                 Cancel
               </Button>
               <Button
-                className="bg-green-500 text-white hover:bg-green-500-600"
+                className="bg-accent text-white hover:bg-accent-400"
                 disabled={
                   !newChatRecipientId ||
                   !newChatMessage.trim() ||
@@ -268,7 +268,7 @@ export default function AdminMessagesPage() {
       {/* ── Main inbox ── */}
       <div className="grid gap-4 lg:grid-cols-3 lg:h-[560px]">
         {/* Thread list */}
-        <Card className="flex h-[420px] flex-col overflow-hidden shadow-soft lg:h-full">
+        <Card className="flex h-[420px] flex-col overflow-hidden border-primary/10 bg-white shadow-card lg:h-full">
           <CardContent className="border-b p-3">
             <Input placeholder="Search conversations..." className="text-sm" />
           </CardContent>
@@ -284,7 +284,7 @@ export default function AdminMessagesPage() {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="border-green-500 text-green-500"
+                  className="border-primary/15 text-primary hover:bg-surface/70"
                   onClick={() => setShowNewChat(true)}
                 >
                   <PenSquare className="h-4 w-4 mr-1" /> New Message
@@ -295,8 +295,8 @@ export default function AdminMessagesPage() {
                 <button
                   key={thread.threadId}
                   onClick={() => setSelectedThread(thread)}
-                  className={`flex w-full items-start gap-3 p-3 text-left hover:bg-muted transition-colors ${
-                    activeThread?.threadId === thread.threadId ? "bg-muted" : ""
+                  className={`flex w-full items-start gap-3 p-3 text-left transition-colors hover:bg-surface/70 ${
+                    activeThread?.threadId === thread.threadId ? "bg-surface/70" : ""
                   }`}
                 >
                   <Avatar className="h-9 w-9 shrink-0">
@@ -327,7 +327,7 @@ export default function AdminMessagesPage() {
         </Card>
 
         {/* Message pane */}
-        <Card className="flex h-[560px] flex-col overflow-hidden shadow-soft lg:col-span-2 lg:h-full">
+        <Card className="flex h-[560px] flex-col overflow-hidden border-primary/10 bg-white shadow-card lg:col-span-2 lg:h-full">
           {activeThread ? (
             <>
               <CardHeader className="border-b pb-3">
@@ -359,7 +359,7 @@ export default function AdminMessagesPage() {
                       <div key={message.id} className={`flex ${fromThem ? "justify-start" : "justify-end"}`}>
                         <div
                           className={`max-w-[75%] rounded-xl px-4 py-2.5 ${
-                            fromThem ? "bg-muted" : "bg-green-500 text-white"
+                            fromThem ? "bg-surface/70 text-text" : "bg-primary text-white"
                           }`}
                         >
                           <p className="text-sm">{message.content}</p>
@@ -385,7 +385,7 @@ export default function AdminMessagesPage() {
                   onChange={(e) => setText(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && send()}
                 />
-                <Button size="sm" onClick={send} disabled={sendMessageMutation.isPending}>
+                <Button className="bg-accent text-white hover:bg-accent-400" size="sm" onClick={send} disabled={sendMessageMutation.isPending}>
                   {sendMessageMutation.isPending ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
@@ -402,7 +402,7 @@ export default function AdminMessagesPage() {
               />
               <Button
                 variant="outline"
-                className="border-green-500 text-green-500"
+                className="border-primary/15 text-primary hover:bg-surface/70"
                 onClick={() => setShowNewChat(true)}
               >
                 <PenSquare className="h-4 w-4 mr-2" /> New Message

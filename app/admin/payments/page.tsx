@@ -13,7 +13,7 @@ import { StatusBadge } from "@/components/shared/StatusBadge";
 import { usePayments, type PaymentRecord } from "@/hooks/usePayments";
 
 function money(amount: number, currency = "NGN") {
-  return new Intl.NumberFormat("en-NG", { style: "currency", currency }).format(amount);
+  return new Intl.NumberFormat("en-NG", { style: "currency", currency, maximumFractionDigits: 0 }).format(amount);
 }
 
 export default function AdminPayments() {
@@ -80,24 +80,33 @@ export default function AdminPayments() {
     <div className="space-y-6">
       <PageHeader title="Payments Overview" description="Manage and track all payments" />
 
-      <div className="grid gap-4 sm:grid-cols-4">
-        <Card className="shadow-card"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Total Collected</p><p className="text-2xl font-bold text-success">{money(totalCollected)}</p></CardContent></Card>
-        <Card className="shadow-card"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Pending</p><p className="text-2xl font-bold text-warning">{money(pending)}</p></CardContent></Card>
-        <Card className="shadow-card"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Failed</p><p className="text-2xl font-bold text-destructive">{money(failed)}</p></CardContent></Card>
-        <Card className="shadow-card"><CardContent className="p-4"><p className="text-xs text-muted-foreground">This Month</p><p className="text-2xl font-bold text-green-500">{money(thisMonth)}</p></CardContent></Card>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {[
+          ["Total Collected", money(totalCollected), "bg-surface/45"],
+          ["Pending", money(pending), "bg-accent-50"],
+          ["Failed", money(failed), "bg-white"],
+          ["This Month", money(thisMonth), "bg-secondary-50"],
+        ].map(([label, value, tone]) => (
+          <Card key={label} className={`border-primary/10 shadow-soft ${tone}`}>
+            <CardContent className="p-5">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">{label}</p>
+              <p className="mt-2 font-display text-2xl font-bold text-primary">{value}</p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      <Card className="shadow-card">
-        <CardHeader className="pb-2"><CardTitle className="font-display text-base text-green-500">Revenue by Month</CardTitle></CardHeader>
+      <Card className="border-primary/10 bg-white shadow-card">
+        <CardHeader className="pb-2"><CardTitle className="font-display text-xl text-primary">Revenue by Month</CardTitle></CardHeader>
         <CardContent>
           <div className="h-[220px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={revenueData}>
-                <CartesianGrid strokeDasharray="3 3" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
                 <XAxis dataKey="month" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} />
                 <Tooltip formatter={(value) => money(Number(value))} />
-                <Bar dataKey="revenue" fill="#F5C518" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="revenue" fill="#EA987B" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

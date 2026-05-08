@@ -117,7 +117,7 @@ export default function AdminSupportPage() {
                 <DialogTitle>{selected.subject}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
-                <div className="grid gap-3 rounded-lg border p-4 text-sm sm:grid-cols-3">
+                <div className="grid gap-3 rounded-2xl border border-primary/10 bg-surface/40 p-4 text-sm sm:grid-cols-3">
                   <div>
                     <p className="text-muted-foreground">Parent</p>
                     <p className="font-medium">{selected.user?.name ?? "Unknown"}</p>
@@ -131,10 +131,10 @@ export default function AdminSupportPage() {
                     <p className="font-medium">{formatDate(selected.createdAt)}</p>
                   </div>
                 </div>
-                <div className="rounded-lg bg-muted p-4 text-sm">{selected.description}</div>
+                <div className="rounded-2xl bg-white p-4 text-sm text-text shadow-soft">{selected.description}</div>
                 <div className="max-h-64 space-y-3 overflow-y-auto">
                   {(selected.replies ?? []).map((ticketReply) => (
-                    <div key={ticketReply.id} className={`rounded-lg p-3 text-sm ${ticketReply.isStaff ? "bg-green-500 text-white" : "bg-teal/10"}`}>
+                    <div key={ticketReply.id} className={`rounded-2xl p-3 text-sm ${ticketReply.isStaff ? "bg-primary text-white" : "bg-secondary-50 text-text"}`}>
                       <p>{ticketReply.content}</p>
                       <p className="mt-1 text-xs opacity-70">{formatDate(ticketReply.createdAt)}</p>
                     </div>
@@ -154,7 +154,7 @@ export default function AdminSupportPage() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <Button className="self-end" variant="outline" onClick={handleStatus} disabled={updateTicket.isPending}>
+                  <Button className="self-end border-primary/15 text-primary hover:bg-surface/70" variant="outline" onClick={handleStatus} disabled={updateTicket.isPending}>
                     <CheckCircle className="mr-2 h-4 w-4" />
                     Update
                   </Button>
@@ -163,7 +163,7 @@ export default function AdminSupportPage() {
                   <Label>Reply</Label>
                   <Textarea rows={4} value={reply} onChange={(event) => setReply(event.target.value)} placeholder="Type a staff reply..." />
                 </div>
-                <Button onClick={handleReply} disabled={replyToTicket.isPending}>
+                <Button className="bg-accent text-white hover:bg-accent-400" onClick={handleReply} disabled={replyToTicket.isPending}>
                   <MessageSquare className="mr-2 h-4 w-4" />
                   {replyToTicket.isPending ? "Sending..." : "Send Reply"}
                 </Button>

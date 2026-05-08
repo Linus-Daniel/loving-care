@@ -46,10 +46,10 @@ export default function RegistrationDetailPage() {
   return (
     <div className="space-y-6">
       <PageHeader title="Registration Detail" description="Review application data, add notes, and update approval status." />
-      <Card>
+      <Card className="border-primary/10 bg-white shadow-card">
         <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="font-display text-xl font-bold text-green-500">{registration.childFirstName} {registration.childLastName}</p>
+            <p className="font-display text-xl font-bold text-primary">{registration.childFirstName} {registration.childLastName}</p>
             <p className="text-sm text-muted-foreground">Submitted by {registration.parentName} on {new Date(registration.createdAt).toLocaleDateString("en-NG")}</p>
           </div>
           <StatusBadge status={registration.status} />
@@ -57,7 +57,7 @@ export default function RegistrationDetailPage() {
       </Card>
       <div className="grid gap-4 lg:grid-cols-2">
         {sections.map((section) => (
-          <Card key={section.title}>
+          <Card key={section.title} className="border-primary/10 bg-white shadow-soft">
             <CardHeader><CardTitle>{section.title}</CardTitle></CardHeader>
             <CardContent className="space-y-3 text-sm">
               {section.rows.map(([label, value]) => (
@@ -70,13 +70,13 @@ export default function RegistrationDetailPage() {
           </Card>
         ))}
       </div>
-      <Card>
+      <Card className="border-primary/10 bg-white shadow-card">
         <CardHeader><CardTitle>Admin Notes</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <Textarea value={notes || registration.adminNotes || ""} onChange={(event) => setNotes(event.target.value)} rows={4} />
           <div className="flex flex-wrap gap-2">
-            <Button onClick={() => update.mutate("APPROVED")} disabled={update.isPending}>Approve</Button>
-            <Button variant="outline" onClick={() => update.mutate("WAITLISTED")} disabled={update.isPending}>Waitlist</Button>
+            <Button className="bg-accent text-white hover:bg-accent-400" onClick={() => update.mutate("APPROVED")} disabled={update.isPending}>Approve</Button>
+            <Button className="border-primary/15 text-primary hover:bg-surface/70" variant="outline" onClick={() => update.mutate("WAITLISTED")} disabled={update.isPending}>Waitlist</Button>
             <Button variant="destructive" onClick={() => update.mutate("REJECTED")} disabled={update.isPending}>Reject</Button>
           </div>
         </CardContent>

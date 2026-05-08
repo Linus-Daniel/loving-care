@@ -22,7 +22,7 @@ export default function CmsPage() {
         title="CMS Content"
         description="Manage public website content directly inside the app."
         action={
-          <Button asChild>
+          <Button className="bg-accent text-white shadow-soft hover:bg-accent-400" asChild>
             <Link href="/admin/studio">Open Studio</Link>
           </Button>
         }
@@ -31,15 +31,15 @@ export default function CmsPage() {
         {documents.map((document) => {
           const Icon = document.icon;
           return (
-            <Card key={document.type} className="shadow-card">
+            <Card key={document.type} className="border-primary/10 bg-white shadow-card transition-all hover:-translate-y-0.5 hover:shadow-soft">
               <CardContent className="space-y-3 p-5">
                 <div className="flex items-start gap-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-green-500/10 text-green-500">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface text-primary">
                     <Icon className="h-5 w-5" />
                   </span>
                   <div>
-                    <p className="font-display text-lg font-bold text-green-500">{document.name}</p>
-                    <p className="font-mono text-xs text-teal">{document.type}</p>
+                    <p className="font-display text-lg font-bold text-primary">{document.name}</p>
+                    <p className="font-mono text-xs text-muted-foreground">{document.type}</p>
                   </div>
                 </div>
                 <p className="text-sm text-muted-foreground">{document.description}</p>

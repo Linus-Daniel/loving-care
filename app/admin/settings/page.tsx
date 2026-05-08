@@ -25,7 +25,7 @@ const fallbackSettings: SiteSettingsRecord = {
   logo: null,
   favicon: null,
   primaryColor: "#0D1F5C",
-  accentColor: "#F5C518",
+  accentColor: "#EA987B",
   senderName: "",
   senderEmail: "",
   emailFooter: "",
@@ -69,12 +69,12 @@ export default function SiteSettings() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl lg:text-2xl font-display font-bold text-green-500">Site Settings</h1>
+        <h1 className="text-xl lg:text-2xl font-display font-bold text-primary">Site Settings</h1>
         <p className="text-sm text-muted-foreground">Persist system-wide configuration for the school platform.</p>
       </div>
 
       <Tabs defaultValue="general" className="space-y-6">
-        <TabsList className="flex h-auto flex-wrap justify-start bg-muted">
+        <TabsList className="flex h-auto flex-wrap justify-start bg-white shadow-soft">
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="appearance">Appearance</TabsTrigger>
           <TabsTrigger value="email">Email</TabsTrigger>
@@ -83,8 +83,8 @@ export default function SiteSettings() {
         </TabsList>
 
         <TabsContent value="general">
-          <Card className="shadow-soft">
-            <CardHeader><CardTitle className="flex items-center gap-2 text-base font-display text-green-500"><Settings className="h-4 w-4" /> General</CardTitle></CardHeader>
+          <Card className="border-primary/10 bg-white shadow-card">
+            <CardHeader><CardTitle className="flex items-center gap-2 text-base font-display text-primary"><Settings className="h-4 w-4" /> General</CardTitle></CardHeader>
             <CardContent className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2"><Label>School Name</Label><Input value={settings.name} onChange={(event) => setValue("name", event.target.value)} /></div>
               <div className="space-y-2"><Label>Tagline</Label><Input value={settings.tagline ?? ""} onChange={(event) => setValue("tagline", event.target.value)} /></div>
@@ -97,12 +97,12 @@ export default function SiteSettings() {
         </TabsContent>
 
         <TabsContent value="appearance">
-          <Card className="shadow-soft">
-            <CardHeader><CardTitle className="flex items-center gap-2 text-base font-display text-green-500"><Image className="h-4 w-4" /> Appearance</CardTitle></CardHeader>
+          <Card className="border-primary/10 bg-white shadow-card">
+            <CardHeader><CardTitle className="flex items-center gap-2 text-base font-display text-primary"><Image className="h-4 w-4" /> Appearance</CardTitle></CardHeader>
             <CardContent className="space-y-6">
               <div className="flex flex-wrap items-center gap-4">
-                <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl bg-green-500">
-                  {settings.logo ? <img src={settings.logo} alt="Logo" className="h-full w-full object-cover" /> : <span className="text-xl font-bold text-secondary">L</span>}
+                <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl bg-primary">
+                  {settings.logo ? <img src={settings.logo} alt="Logo" className="h-full w-full object-cover" /> : <span className="text-xl font-bold text-white">L</span>}
                 </div>
                 <div>
                   <p className="text-sm font-medium">Logo</p>
@@ -118,7 +118,7 @@ export default function SiteSettings() {
                     onUploadError={(error) => {
                       toast.error(error.message);
                     }}
-                    appearance={{ button: "bg-green-500 text-white h-8 w-32 text-xs", allowedContent: "text-xs text-muted-foreground" }}
+                    appearance={{ button: "bg-accent text-white h-8 w-32 text-xs", allowedContent: "text-xs text-muted-foreground" }}
                   />
                 </div>
               </div>
@@ -131,8 +131,8 @@ export default function SiteSettings() {
         </TabsContent>
 
         <TabsContent value="email">
-          <Card className="shadow-soft">
-            <CardHeader><CardTitle className="flex items-center gap-2 text-base font-display text-green-500"><Mail className="h-4 w-4" /> Email</CardTitle></CardHeader>
+          <Card className="border-primary/10 bg-white shadow-card">
+            <CardHeader><CardTitle className="flex items-center gap-2 text-base font-display text-primary"><Mail className="h-4 w-4" /> Email</CardTitle></CardHeader>
             <CardContent className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2"><Label>Sender Name</Label><Input value={settings.senderName ?? ""} onChange={(event) => setValue("senderName", event.target.value)} /></div>
               <div className="space-y-2"><Label>Sender Email</Label><Input value={settings.senderEmail ?? ""} onChange={(event) => setValue("senderEmail", event.target.value)} /></div>
@@ -142,8 +142,8 @@ export default function SiteSettings() {
         </TabsContent>
 
         <TabsContent value="integrations">
-          <Card className="shadow-soft">
-            <CardHeader><CardTitle className="flex items-center gap-2 text-base font-display text-green-500"><Globe className="h-4 w-4" /> Integrations</CardTitle></CardHeader>
+          <Card className="border-primary/10 bg-white shadow-card">
+            <CardHeader><CardTitle className="flex items-center gap-2 text-base font-display text-primary"><Globe className="h-4 w-4" /> Integrations</CardTitle></CardHeader>
             <CardContent className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2"><Label>Stripe Public Key</Label><Input value={settings.stripePublicKey ?? ""} onChange={(event) => setValue("stripePublicKey", event.target.value)} /></div>
               <div className="space-y-2"><Label>PostHog Key</Label><Input value={settings.posthogKey ?? ""} onChange={(event) => setValue("posthogKey", event.target.value)} /></div>
@@ -156,14 +156,14 @@ export default function SiteSettings() {
         </TabsContent>
 
         <TabsContent value="maintenance">
-          <Card className="shadow-soft">
-            <CardHeader><CardTitle className="flex items-center gap-2 text-base font-display text-green-500"><Wrench className="h-4 w-4" /> Maintenance</CardTitle></CardHeader>
+          <Card className="border-primary/10 bg-white shadow-card">
+            <CardHeader><CardTitle className="flex items-center gap-2 text-base font-display text-primary"><Wrench className="h-4 w-4" /> Maintenance</CardTitle></CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between rounded-lg bg-muted p-3">
+              <div className="flex items-center justify-between rounded-lg bg-surface/60 p-3">
                 <div><p className="text-sm font-medium">Maintenance Mode</p><p className="text-xs text-muted-foreground">Show maintenance content to non-admins.</p></div>
                 <Switch checked={settings.maintenance} onCheckedChange={(value) => setValue("maintenance", value)} />
               </div>
-              <div className="flex items-center justify-between rounded-lg bg-muted p-3">
+              <div className="flex items-center justify-between rounded-lg bg-surface/60 p-3">
                 <div><p className="text-sm font-medium">Allow New Registrations</p><p className="text-xs text-muted-foreground">Accept public enrollment applications.</p></div>
                 <Switch checked={settings.registration} onCheckedChange={(value) => setValue("registration", value)} />
               </div>
@@ -173,7 +173,7 @@ export default function SiteSettings() {
         </TabsContent>
       </Tabs>
 
-      <Button className="bg-secondary font-semibold text-green-500 hover:bg-secondary/90" onClick={save} disabled={updateSettings.isPending}>
+      <Button className="bg-accent font-semibold text-white shadow-soft hover:bg-accent-400" onClick={save} disabled={updateSettings.isPending}>
         <Save className="mr-2 h-4 w-4" />
         {updateSettings.isPending ? "Saving..." : "Save All Settings"}
       </Button>

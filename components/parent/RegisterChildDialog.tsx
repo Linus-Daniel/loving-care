@@ -41,14 +41,14 @@ const enrollSchema = z.object({
   emergencyName: z.string().min(1, "Emergency contact is required"),
   emergencyPhone: z.string().min(1, "Emergency phone is required"),
   emergencyRel: z.string().min(1, "Relationship is required"),
-  termsAccepted: z.literal(true, {
-    errorMap: () => ({ message: "You must accept the terms" }),
+  termsAccepted: z.boolean().refine((val) => val === true, {
+    message: "You must accept the terms",
   }),
-  privacyAccepted: z.literal(true, {
-    errorMap: () => ({ message: "You must accept the privacy policy" }),
+  privacyAccepted: z.boolean().refine((val) => val === true, {
+    message: "You must accept the privacy policy",
   }),
-  parentalConsent: z.literal(true, {
-    errorMap: () => ({ message: "Parental consent is required" }),
+  parentalConsent: z.boolean().refine((val) => val === true, {
+    message: "Parental consent is required",
   }),
 });
 
@@ -74,9 +74,9 @@ export function RegisterChildDialog({ trigger }: { trigger?: React.ReactNode }) 
       emergencyName: "",
       emergencyPhone: "",
       emergencyRel: "",
-      termsAccepted: false as any,
-      privacyAccepted: false as any,
-      parentalConsent: false as any,
+      termsAccepted: false,
+      privacyAccepted: false,
+      parentalConsent: false,
     },
   });
 

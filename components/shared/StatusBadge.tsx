@@ -10,7 +10,7 @@ const statusClasses: Record<string, string> = {
   ABSENT: "border-destructive/30 text-destructive bg-destructive/10",
   PRESENT: "border-success/30 text-success bg-success/10",
   LATE: "border-warning/30 text-warning bg-warning/10",
-  EXCUSED: "border-teal/30 text-teal bg-teal/10",
+  EXCUSED: "border-primary/30 text-primary bg-surface/70",
   SUCCEEDED: "border-success/30 text-success bg-success/10",
   FAILED: "border-destructive/30 text-destructive bg-destructive/10",
   REFUNDED: "border-muted-foreground/30 text-muted-foreground bg-muted",

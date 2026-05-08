@@ -73,7 +73,7 @@ export default function ManageStaff() {
         title="Manage Staff"
         description="View and manage staff members"
         action={
-          <Button className="bg-secondary font-semibold text-green-500 hover:bg-secondary-400">
+          <Button className="bg-accent font-semibold text-white shadow-soft hover:bg-accent-400">
             <Plus className="mr-2 h-4 w-4" />
             Add Staff
           </Button>
@@ -81,10 +81,10 @@ export default function ManageStaff() {
       />
 
       <div className="flex justify-end gap-2">
-        <Button variant={view === "grid" ? "default" : "outline"} size="icon" onClick={() => setView("grid")}>
+        <Button className={view === "grid" ? "bg-primary text-white hover:bg-primary-400" : "border-primary/15 bg-white text-primary hover:bg-surface/70"} variant={view === "grid" ? "default" : "outline"} size="icon" onClick={() => setView("grid")}>
           <Grid3X3 className="h-4 w-4" />
         </Button>
-        <Button variant={view === "list" ? "default" : "outline"} size="icon" onClick={() => setView("list")}>
+        <Button className={view === "list" ? "bg-primary text-white hover:bg-primary-400" : "border-primary/15 bg-white text-primary hover:bg-surface/70"} variant={view === "list" ? "default" : "outline"} size="icon" onClick={() => setView("list")}>
           <List className="h-4 w-4" />
         </Button>
       </div>
@@ -98,7 +98,7 @@ export default function ManageStaff() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {staff.map((member) => (
-            <Card key={member.id} className="shadow-card">
+            <Card key={member.id} className="border-primary/10 bg-white shadow-card transition-all hover:-translate-y-0.5 hover:shadow-soft">
               <CardContent className="p-4">
                 <div className="mb-3 flex items-center gap-3">
                   <Avatar className="h-12 w-12">
@@ -106,15 +106,15 @@ export default function ManageStaff() {
                     <AvatarFallback>{member.name[0]}</AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-sm font-medium">{member.name}</p>
-                    <p className="text-xs text-teal">{member.role}</p>
+                    <p className="text-sm font-semibold text-primary">{member.name}</p>
+                    <p className="text-xs text-muted-foreground">{member.role}</p>
                   </div>
                 </div>
                 <div className="mb-3 flex items-center justify-between text-xs text-muted-foreground">
                   <span>Class: {member.class ?? "All"}</span>
                   <StatusBadge status={member.isActive ? "ACTIVE" : "INACTIVE"} />
                 </div>
-                <Button variant="outline" size="sm" disabled={!member.isActive} onClick={() => setDeactivateId(member.id)} className="w-full">
+                <Button variant="outline" size="sm" disabled={!member.isActive} onClick={() => setDeactivateId(member.id)} className="w-full border-primary/15 text-primary hover:bg-surface/70">
                   Deactivate
                 </Button>
               </CardContent>

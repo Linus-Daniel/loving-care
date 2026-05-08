@@ -2,14 +2,15 @@
 
 import { CardElement, Elements, useElements, useStripe } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
-import { ArrowRight, Building2, CreditCard, Lock } from "lucide-react";
+import { ArrowRight, Building2, CreditCard, Lock, ReceiptText, WalletCards } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { EmptyState } from "@/components/shared/EmptyState";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { PageHeader } from "@/components/shared/PageHeader";
 import { useChildren } from "@/hooks/useChildren";
 import { useCreatePaymentIntent } from "@/hooks/usePayments";
 import { useCreateResource } from "@/hooks/useResources";
@@ -28,14 +29,14 @@ function money(value: number) {
   }).format(value);
 }
 
-function CardPaymentForm({ 
-  amount, 
-  childId, 
-  duration, 
-  onSuccess 
-}: { 
-  amount: number; 
-  childId: string; 
+function CardPaymentForm({
+  amount,
+  childId,
+  duration,
+  onSuccess,
+}: {
+  amount: number;
+  childId: string;
   duration: number;
   onSuccess: () => void;
 }) {
@@ -86,26 +87,24 @@ function CardPaymentForm({
     <div className="space-y-4">
       <div className="space-y-2">
         <Label>Card Details</Label>
-        <div className="rounded-lg border border-border bg-muted/30 p-3">
-          <CardElement options={{ 
-            hidePostalCode: true,
-            style: {
-              base: {
-                fontSize: '16px',
-                color: 'var(--foreground)',
-                '::placeholder': { color: 'var(--muted-foreground)' },
-              }
-            }
-          }} />
+        <div className="rounded-2xl border border-primary/10 bg-white p-4 shadow-xs">
+          <CardElement
+            options={{
+              hidePostalCode: true,
+              style: {
+                base: {
+                  fontSize: "16px",
+                  color: "#21445E",
+                  "::placeholder": { color: "#6B7280" },
+                },
+              },
+            }}
+          />
         </div>
       </div>
-      <Button 
-        className="w-full bg-secondary font-semibold text-green-500 hover:bg-secondary-400" 
-        onClick={pay} 
-        disabled={!stripe || createIntent.isPending || !childId}
-      >
+      <Button className="w-full bg-accent text-white hover:bg-accent-400" onClick={pay} disabled={!stripe || createIntent.isPending || !childId}>
         {createIntent.isPending ? "Preparing..." : `Pay ${money(amount)}`}
-        <ArrowRight className="ml-2 h-4 w-4" />
+        <ArrowRight className="h-4 w-4" />
       </Button>
     </div>
   );
@@ -115,7 +114,7 @@ export default function MakePayment() {
   const [method, setMethod] = useState<"card" | "bank">("card");
   const [selectedChildId, setSelectedChildId] = useState<string>("");
   const [duration, setDuration] = useState(1);
-  
+
   const { data: children = [], isLoading: childrenLoading } = useChildren();
   const stripeOptions = useMemo(() => ({ appearance: { theme: "stripe" as const } }), []);
   const createResource = useCreateResource();
@@ -126,7 +125,7 @@ export default function MakePayment() {
     }
   }, [children, selectedChildId]);
 
-  const selectedChild = children.find(c => c.id === selectedChildId);
+  const selectedChild = children.find((child) => child.id === selectedChildId);
   const totalAmount = TUITION_PER_MONTH * duration;
 
   async function savePaymentProof(file: UploadedClientFile) {
@@ -140,7 +139,6 @@ export default function MakePayment() {
         fileType: (file.serverData?.name ?? file.name).split(".").pop()?.toLowerCase() ?? "file",
         category: "Payment Proofs",
         visibility: "admin",
-        // We could add child info here too
       });
       toast.success("Payment proof uploaded");
     } catch (error) {
@@ -149,155 +147,184 @@ export default function MakePayment() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <PageHeader title="Make Payment" description="Pay tuition and fees for your children" />
+    <div className="mx-auto max-w-6xl space-y-6">
+      <section className="overflow-hidden rounded-[2rem] border border-primary/10 bg-white shadow-card">
+        <div className="grid gap-0 lg:grid-cols-[1.2fr_0.8fr]">
+          <div className="p-6 sm:p-8">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-50 text-accent">
+              <WalletCards className="h-6 w-6" />
+            </div>
+            <h1 className="font-display text-3xl font-bold text-primary sm:text-4xl">Make Payment</h1>
+            <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
+              Choose a child, select the tuition duration, and complete payment by card or bank transfer.
+            </p>
+          </div>
+          <div className="border-t border-primary/10 bg-secondary-50 p-6 sm:p-8 lg:border-l lg:border-t-0">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">Total</p>
+            <p className="mt-3 font-display text-4xl font-bold text-primary">{money(totalAmount)}</p>
+            <p className="text-sm text-muted-foreground">
+              {money(TUITION_PER_MONTH)} x {duration} month{duration > 1 ? "s" : ""}
+            </p>
+          </div>
+        </div>
+      </section>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card className="shadow-card">
-          <CardHeader className="pb-3">
-            <CardTitle className="font-display text-base text-green-500">1. Select Child</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {childrenLoading ? (
-              <p className="text-sm text-muted-foreground">Loading children...</p>
-            ) : (
-              <div className="grid gap-2">
-                {children.map((child) => (
-                  <button
-                    key={child.id}
-                    onClick={() => setSelectedChildId(child.id)}
-                    className={`flex items-center gap-3 rounded-lg border p-3 text-left transition-all ${
-                      selectedChildId === child.id 
-                        ? "border-green-500 bg-green-500/5 ring-1 ring-green-500" 
-                        : "border-border hover:border-green-500/50"
-                    }`}
-                  >
-                    <div className="h-10 w-10 overflow-hidden rounded-full bg-muted">
-                      {child.photo && <img src={child.photo} alt={child.firstName} className="h-full w-full object-cover" />}
-                    </div>
-                    <div>
-                      <p className="font-medium">{child.firstName} {child.lastName}</p>
-                      <p className="text-xs text-muted-foreground">{child.program}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            )}
-          </CardContent>
+      {childrenLoading ? (
+        <Card className="border-primary/10 bg-white shadow-card">
+          <CardContent className="p-6 text-sm text-muted-foreground">Loading children...</CardContent>
         </Card>
+      ) : children.length === 0 ? (
+        <EmptyState title="No child profile found" description="A child profile is required before payment can be made." />
+      ) : (
+        <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="space-y-6">
+            <Card className="border-primary/10 bg-white shadow-card">
+              <CardHeader className="pb-3">
+                <CardTitle className="font-display text-xl text-primary">1. Select Child</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-3">
+                {children.map((child) => {
+                  const active = selectedChildId === child.id;
+                  return (
+                    <button
+                      key={child.id}
+                      onClick={() => setSelectedChildId(child.id)}
+                      className={`flex items-center gap-3 rounded-3xl border p-4 text-left transition-all ${
+                        active
+                          ? "border-accent bg-accent-50 ring-2 ring-accent/20"
+                          : "border-primary/10 bg-[#FFF9F0] hover:border-accent/50"
+                      }`}
+                    >
+                      <Avatar className="h-12 w-12">
+                        <AvatarImage src={child.photo ?? undefined} />
+                        <AvatarFallback className="bg-secondary-100 font-bold text-primary">
+                          {child.firstName[0]}
+                          {child.lastName[0]}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span>
+                        <span className="block font-bold text-primary">
+                          {child.firstName} {child.lastName}
+                        </span>
+                        <span className="text-sm text-muted-foreground">{child.program}</span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </CardContent>
+            </Card>
 
-        <Card className="shadow-card">
-          <CardHeader className="pb-3">
-            <CardTitle className="font-display text-base text-green-500">2. Select Duration</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-3 gap-2">
-              {[1, 3, 6, 9, 12].map((m) => (
+            <Card className="border-primary/10 bg-white shadow-card">
+              <CardHeader className="pb-3">
+                <CardTitle className="font-display text-xl text-primary">2. Select Duration</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-3 gap-2">
+                  {[1, 3, 6, 9, 12].map((months) => (
+                    <button
+                      key={months}
+                      onClick={() => setDuration(months)}
+                      className={`rounded-2xl border p-3 text-center transition-all ${
+                        duration === months
+                          ? "border-accent bg-accent text-white shadow-soft"
+                          : "border-primary/10 bg-[#FFF9F0] text-primary hover:border-accent/50"
+                      }`}
+                    >
+                      <p className="font-display text-xl font-bold">{months}</p>
+                      <p className="text-[10px] font-bold uppercase opacity-75">Month{months > 1 ? "s" : ""}</p>
+                    </button>
+                  ))}
+                </div>
+                <div className="rounded-3xl bg-secondary-50 p-4 text-center">
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Paying for</p>
+                  <p className="mt-1 font-bold text-primary">{duration === 1 ? "Current Month" : `${duration} Months Upfront`}</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Card className="border-primary/10 bg-white shadow-card">
+            <CardHeader className="pb-3">
+              <CardTitle className="font-display text-xl text-primary">3. Payment Method</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <div className="rounded-3xl bg-accent-50 p-5">
+                <p className="text-sm text-muted-foreground">Total to pay for {selectedChild?.firstName || "child"}</p>
+                <p className="mt-1 font-display text-4xl font-bold text-primary">{money(totalAmount)}</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
                 <button
-                  key={m}
-                  onClick={() => setDuration(m)}
-                  className={`rounded-lg border p-2 text-center transition-all ${
-                    duration === m 
-                      ? "border-green-500 bg-green-500/5 font-bold text-green-500" 
-                      : "border-border hover:border-green-500/50"
+                  onClick={() => setMethod("card")}
+                  className={`rounded-3xl border-2 p-4 text-center transition-colors ${
+                    method === "card" ? "border-accent bg-accent-50" : "border-primary/10 bg-[#FFF9F0]"
                   }`}
                 >
-                  <p className="text-lg">{m}</p>
-                  <p className="text-[10px] uppercase text-muted-foreground">Month{m > 1 ? 's' : ''}</p>
+                  <CreditCard className="mx-auto mb-2 h-5 w-5 text-accent" />
+                  <span className="text-sm font-bold text-primary">Card</span>
                 </button>
-              ))}
-            </div>
-            <div className="rounded-lg bg-muted p-3 text-center">
-              <p className="text-xs text-muted-foreground">Paying for</p>
-              <p className="font-bold text-green-500">
-                {duration === 1 ? "Current Month" : `${duration} Months Upfront`}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card className="border-warning/30 bg-warning/5 shadow-card">
-        <CardContent className="flex items-center justify-between p-6">
-          <div>
-            <p className="text-sm text-muted-foreground">Total to Pay for {selectedChild?.firstName || "Child"}</p>
-            <p className="font-display text-4xl font-bold text-green-500">{money(totalAmount)}</p>
-          </div>
-          <div className="text-right text-xs text-muted-foreground">
-            <p>{money(TUITION_PER_MONTH)} / month</p>
-            <p>x {duration} month{duration > 1 ? 's' : ''}</p>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="shadow-card">
-        <CardHeader className="pb-3">
-          <CardTitle className="font-display text-base text-green-500">3. Payment Method</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            <button onClick={() => setMethod("card")} className={`rounded-lg border-2 p-3 text-center transition-colors ${method === "card" ? "border-green-500 bg-green-500/5" : "border-border"}`}>
-              <CreditCard className="mx-auto mb-1 h-5 w-5 text-green-500" />
-              <span className="text-xs font-medium">Card</span>
-            </button>
-            <button onClick={() => setMethod("bank")} className={`rounded-lg border-2 p-3 text-center transition-colors ${method === "bank" ? "border-green-500 bg-green-500/5" : "border-border"}`}>
-              <Building2 className="mx-auto mb-1 h-5 w-5 text-green-500" />
-              <span className="text-xs font-medium">Bank Transfer</span>
-            </button>
-          </div>
-
-          {method === "card" && (
-            stripePromise ? (
-              <Elements stripe={stripePromise} options={stripeOptions}>
-                <CardPaymentForm 
-                  amount={totalAmount} 
-                  childId={selectedChildId} 
-                  duration={duration} 
-                  onSuccess={() => {}} 
-                />
-              </Elements>
-            ) : (
-              <div className="rounded-lg border border-warning/30 bg-warning/10 p-4 text-sm text-warning">
-                Stripe public key is not configured. Add `NEXT_PUBLIC_STRIPE_PUBLIC_KEY` to enable card payments.
+                <button
+                  onClick={() => setMethod("bank")}
+                  className={`rounded-3xl border-2 p-4 text-center transition-colors ${
+                    method === "bank" ? "border-accent bg-accent-50" : "border-primary/10 bg-[#FFF9F0]"
+                  }`}
+                >
+                  <Building2 className="mx-auto mb-2 h-5 w-5 text-accent" />
+                  <span className="text-sm font-bold text-primary">Bank Transfer</span>
+                </button>
               </div>
-            )
-          )}
 
-          {method === "bank" && (
-            <div className="space-y-4 rounded-lg bg-muted p-4 text-sm">
-              <div className="space-y-1">
-                <p className="font-medium">Bank Transfer Details</p>
-                <p>Bank: First Bank of Nigeria</p>
-                <p>Account Name: Loving Family Daycare Ltd</p>
-                <p>Account Number: 3024567890</p>
-                <p className="text-xs text-muted-foreground italic">
-                  Note: Please transfer <strong>{money(totalAmount)}</strong> and upload the receipt.
-                </p>
+              {method === "card" &&
+                (stripePromise ? (
+                  <Elements stripe={stripePromise} options={stripeOptions}>
+                    <CardPaymentForm amount={totalAmount} childId={selectedChildId} duration={duration} onSuccess={() => {}} />
+                  </Elements>
+                ) : (
+                  <div className="rounded-3xl border border-warning/30 bg-warning/10 p-4 text-sm text-warning">
+                    Stripe public key is not configured. Add `NEXT_PUBLIC_STRIPE_PUBLIC_KEY` to enable card payments.
+                  </div>
+                ))}
+
+              {method === "bank" && (
+                <div className="space-y-4 rounded-3xl bg-secondary-50 p-4 text-sm">
+                  <div className="space-y-1">
+                    <p className="flex items-center gap-2 font-bold text-primary">
+                      <ReceiptText className="h-4 w-4 text-accent" />
+                      Bank Transfer Details
+                    </p>
+                    <p>Bank: First Bank of Nigeria</p>
+                    <p>Account Name: Loving Family Daycare Ltd</p>
+                    <p>Account Number: 3024567890</p>
+                    <p className="text-xs italic text-muted-foreground">
+                      Transfer <strong>{money(totalAmount)}</strong> and upload the receipt.
+                    </p>
+                  </div>
+                  <UploadDropzone
+                    endpoint="documentUploader"
+                    onClientUploadComplete={(files) => {
+                      const file = files[0] as UploadedClientFile | undefined;
+                      if (file) void savePaymentProof(file);
+                    }}
+                    onUploadError={(error) => {
+                      toast.error(error.message);
+                    }}
+                    appearance={{
+                      container: "bg-white border-primary/10",
+                      button: "bg-accent text-white hover:bg-accent-400",
+                      label: "text-primary",
+                    }}
+                  />
+                </div>
+              )}
+
+              <div className="flex items-center gap-2 rounded-2xl bg-[#FFF9F0] p-3 text-xs text-muted-foreground">
+                <Lock className="h-3.5 w-3.5" />
+                <span>SSL secured payment. Your information is encrypted.</span>
               </div>
-              <UploadDropzone
-                endpoint="documentUploader"
-                onClientUploadComplete={(files) => {
-                  const file = files[0] as UploadedClientFile | undefined;
-                  if (file) void savePaymentProof(file);
-                }}
-                onUploadError={(error) => {
-                  toast.error(error.message);
-                }}
-                appearance={{
-                  container: "bg-background border-border",
-                  button: "bg-green-500 text-white hover:bg-green-500/90",
-                  label: "text-green-500",
-                }}
-              />
-            </div>
-          )}
-
-          <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-            <Lock className="h-3 w-3" />
-            <span>SSL secured payment. Your information is encrypted.</span>
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }
