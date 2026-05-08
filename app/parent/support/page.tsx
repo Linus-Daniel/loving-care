@@ -62,7 +62,7 @@ export default function Support() {
         action={
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-yellow font-semibold text-green hover:bg-yellow-400">
+              <Button className="bg-secondary font-semibold text-green-500 hover:bg-secondary-400">
                 <Plus className="mr-2 h-4 w-4" />
                 Open Ticket
               </Button>
@@ -80,7 +80,7 @@ export default function Support() {
                   <Label>Description</Label>
                   <Textarea value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Describe your issue in detail..." rows={4} />
                 </div>
-                <Button className="w-full bg-green text-white" onClick={() => createTicket.mutate()} disabled={createTicket.isPending || !subject || !description}>
+                <Button className="w-full bg-green-500 text-white" onClick={() => createTicket.mutate()} disabled={createTicket.isPending || !subject || !description}>
                   {createTicket.isPending ? "Submitting..." : "Submit Ticket"}
                 </Button>
               </div>
@@ -91,7 +91,7 @@ export default function Support() {
 
       <Card className="shadow-card">
         <CardHeader className="pb-3">
-          <CardTitle className="font-display text-base text-green">Your Tickets</CardTitle>
+          <CardTitle className="font-display text-base text-green-500">Your Tickets</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (

@@ -72,7 +72,7 @@ export default function SeoPage() {
           <Card key={row.path}>
             <CardContent className="grid gap-4 p-4 lg:grid-cols-[150px_1fr_1fr_170px]">
               <div>
-                <p className="font-semibold text-green">{row.page}</p>
+                <p className="font-semibold text-green-500">{row.page}</p>
                 <p className="text-xs text-muted-foreground">{row.path}</p>
                 <StatusBadge status={row.score >= 70 ? "ACTIVE" : row.score >= 40 ? "PENDING" : "REJECTED"} />
                 <p className="mt-2 text-xs text-muted-foreground">Score: {row.score}/100</p>
@@ -105,7 +105,7 @@ export default function SeoPage() {
                       toast.error(error.message);
                     }}
                     content={{ button: <Upload className="h-4 w-4" />, allowedContent: "" }}
-                    appearance={{ button: "bg-green text-white h-9 w-10", allowedContent: "hidden" }}
+                    appearance={{ button: "bg-green-500 text-white h-9 w-10", allowedContent: "hidden" }}
                   />
                 </div>
               </div>

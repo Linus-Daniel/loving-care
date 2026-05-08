@@ -28,10 +28,14 @@ export async function PATCH(request: Request) {
   try {
     const session = await requireSession(["PARENT", "ADMIN", "SUPER_ADMIN", "STAFF"]);
     if (!session.userId) return apiError("User record not found", 404);
-    await parseJson(request, notificationBulkPatchSchema);
+    const data = await parseJson(request, notificationBulkPatchSchema);
 
     const result = await prisma.notification.updateMany({
-      where: { userId: session.userId, isRead: false },
+      where: {
+        userId: session.userId,
+        isRead: false,
+        ...(data.type ? { type: data.type } : {}),
+      },
       data: { isRead: true },
     });
 

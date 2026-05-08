@@ -91,8 +91,8 @@ export default function RolesPage() {
           <Card key={role.name} className="shadow-soft">
             <CardContent className="p-4">
               <div className="mb-3 flex items-center gap-2">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green/10">
-                  <ShieldCheck className="h-4 w-4 text-green" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-500/10">
+                  <ShieldCheck className="h-4 w-4 text-green-500" />
                 </div>
                 <div>
                   <p className="text-sm font-medium">{role.label}</p>

@@ -28,7 +28,12 @@ export function usePayments(params?: { status?: string; page?: number; pageSize?
 
 export function useCreatePaymentIntent() {
   return useMutation({
-    mutationFn: (body: { amount: number; currency?: string; description: string }) =>
+    mutationFn: (body: {
+      amount: number;
+      currency?: string;
+      description: string;
+      metadata?: Record<string, string | number | boolean | null>;
+    }) =>
       apiFetch<{ clientSecret: string; payment: PaymentRecord }>("/api/stripe/create-payment-intent", {
         method: "POST",
         body,

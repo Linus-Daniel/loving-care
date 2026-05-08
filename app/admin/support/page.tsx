@@ -134,7 +134,7 @@ export default function AdminSupportPage() {
                 <div className="rounded-lg bg-muted p-4 text-sm">{selected.description}</div>
                 <div className="max-h-64 space-y-3 overflow-y-auto">
                   {(selected.replies ?? []).map((ticketReply) => (
-                    <div key={ticketReply.id} className={`rounded-lg p-3 text-sm ${ticketReply.isStaff ? "bg-green text-white" : "bg-teal/10"}`}>
+                    <div key={ticketReply.id} className={`rounded-lg p-3 text-sm ${ticketReply.isStaff ? "bg-green-500 text-white" : "bg-teal/10"}`}>
                       <p>{ticketReply.content}</p>
                       <p className="mt-1 text-xs opacity-70">{formatDate(ticketReply.createdAt)}</p>
                     </div>

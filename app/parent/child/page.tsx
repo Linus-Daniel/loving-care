@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, FileText, Pencil, Pill, Stethoscope, User } from "lucide-react";
+import { Download, FileText, Loader2, Pencil, Pill, Stethoscope, User } from "lucide-react";
 import { useState } from "react";
 
 import { EmptyState } from "@/components/shared/EmptyState";
@@ -11,6 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useChildren } from "@/hooks/useChildren";
 import { useResources } from "@/hooks/useResources";
+
+import { RegisterChildDialog } from "@/components/parent/RegisterChildDialog";
 
 function ageFromDob(dateOfBirth: string) {
   const dob = new Date(dateOfBirth);
@@ -28,24 +30,40 @@ export default function ChildProfilePage() {
   const child = children[0];
 
   if (isLoading) {
-    return <p className="text-sm text-muted-foreground">Loading child profile...</p>;
+    return (
+      <div className="flex h-[400px] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-green-500" />
+      </div>
+    );
   }
 
   if (!child) {
-    return <EmptyState title="No child profile" description="Your child's profile will appear here once an admin approves enrollment." />;
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-xl font-display font-bold text-green-500 lg:text-2xl">Child Profile</h1>
+          <p className="text-sm text-muted-foreground">Enroll your child to view their profile, attendance, and records.</p>
+        </div>
+        <EmptyState
+          title="No child profile found"
+          description="You haven't enrolled any children yet. Click the button below to start the enrollment process."
+          action={<RegisterChildDialog />}
+        />
+      </div>
+    );
   }
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-display font-bold text-green lg:text-2xl">Child Profile</h1>
+        <h1 className="text-xl font-display font-bold text-green-500 lg:text-2xl">Child Profile</h1>
         <p className="text-sm text-muted-foreground">View your child's personal, guardian, medical, and document records.</p>
       </div>
 
       <Card className="overflow-hidden shadow-soft">
-        <div className="bg-green p-6 lg:p-8">
+        <div className="bg-green-500 p-6 lg:p-8">
           <div className="flex flex-col items-center gap-4 sm:flex-row">
-            <Avatar className="h-20 w-20 border-4 border-yellow">
+            <Avatar className="h-20 w-20 border-4 border-secondary">
               <AvatarImage src={child.photo ?? undefined} />
               <AvatarFallback className="text-2xl">{child.firstName.charAt(0)}{child.lastName.charAt(0)}</AvatarFallback>
             </Avatar>
@@ -54,9 +72,9 @@ export default function ChildProfilePage() {
               <p className="text-sm text-white/70">
                 Age {ageFromDob(child.dateOfBirth)} • {child.program} • Enrolled {new Date(child.enrollmentDate).toLocaleDateString("en-NG")}
               </p>
-              <StatusBadge status={child.status} className="mt-2 bg-yellow text-green" />
+              <StatusBadge status={child.status} className="mt-2 bg-secondary text-green-500" />
             </div>
-            <Button variant="outline" className="border-white/30 text-white hover:yellow-50/10 sm:ml-auto">
+            <Button variant="outline" className="border-white/30 text-white hover:secondary-50/10 sm:ml-auto">
               <Pencil className="mr-2 h-4 w-4" />
               Edit Profile
             </Button>
@@ -73,7 +91,7 @@ export default function ChildProfilePage() {
           <TabsContent value="overview" className="mt-6">
             <div className="grid gap-6 sm:grid-cols-2">
               <div className="space-y-4">
-                <h3 className="flex items-center gap-2 font-display font-semibold text-green">
+                <h3 className="flex items-center gap-2 font-display font-semibold text-green-500">
                   <User className="h-4 w-4 text-teal" />
                   Basic Information
                 </h3>
@@ -86,7 +104,7 @@ export default function ChildProfilePage() {
                 </div>
               </div>
               <div className="space-y-4">
-                <h3 className="font-display font-semibold text-green">Guardian Information</h3>
+                <h3 className="font-display font-semibold text-green-500">Guardian Information</h3>
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between gap-4"><span className="text-muted-foreground">Primary Guardian</span><span className="font-medium">{child.parent?.name ?? "Not linked"}</span></div>
                   <div className="flex justify-between gap-4"><span className="text-muted-foreground">Phone</span><span className="font-medium">{child.parent?.phone ?? "Not provided"}</span></div>
@@ -116,7 +134,7 @@ export default function ChildProfilePage() {
               </Card>
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-sm font-display"><FileText className="h-4 w-4 text-green" /> Allergies</CardTitle>
+                  <CardTitle className="flex items-center gap-2 text-sm font-display"><FileText className="h-4 w-4 text-green-500" /> Allergies</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground">{child.medicalInfo?.allergies ?? "No allergies recorded."}</p>
@@ -144,8 +162,8 @@ export default function ChildProfilePage() {
               {documents.map((doc) => (
                 <div key={doc.id} className="flex items-center justify-between rounded-lg bg-muted p-4">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green/10">
-                      <FileText className="h-5 w-5 text-green" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/10">
+                      <FileText className="h-5 w-5 text-green-500" />
                     </div>
                     <div>
                       <p className="text-sm font-medium">{doc.name}</p>

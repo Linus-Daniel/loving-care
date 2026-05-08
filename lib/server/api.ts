@@ -1,5 +1,4 @@
 import { auth } from "@clerk/nextjs/server";
-import { clerkClient } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { ZodError, type ZodSchema } from "zod";
 
@@ -54,25 +53,21 @@ export async function requireSession(roles?: ApiRole[]): Promise<ApiSession> {
   }
 
   const claims = session.sessionClaims as RoleClaims | null | undefined;
-  let role = String(claims?.metadata?.role ?? claims?.publicMetadata?.role ?? "PARENT") as ApiRole;
+  let role = (claims?.metadata?.role ?? claims?.publicMetadata?.role ?? "PARENT") as ApiRole;
 
-  try {
-    const client = await clerkClient();
-    const clerkUser = await client.users.getUser(session.userId);
-    const liveRole = clerkUser.publicMetadata?.role ?? clerkUser.unsafeMetadata?.role;
-    if (liveRole) role = String(liveRole).toUpperCase() as ApiRole;
-  } catch {
-    // Session claims are the fallback when Clerk metadata cannot be fetched.
+  const user = await prisma.user.findUnique({
+    where: { clerkId: session.userId },
+    select: { id: true, role: true },
+  });
+
+  // Database role is the ultimate source of truth if synced
+  if (user?.role) {
+    role = user.role as ApiRole;
   }
 
   if (roles && !roles.includes(role)) {
     throw new Response("Forbidden", { status: 403 });
   }
-
-  const user = await prisma.user.findUnique({
-    where: { clerkId: session.userId },
-    select: { id: true },
-  });
 
   return { clerkId: session.userId, role, userId: user?.id };
 }

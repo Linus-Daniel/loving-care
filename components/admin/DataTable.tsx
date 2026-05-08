@@ -85,7 +85,7 @@ export function DataTable<TData extends object>({
       {table.getRowModel().rows.length === 0 ? (
         <EmptyState title={emptyTitle} description="Try changing your filters or adding a new record." />
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-border yellow-50">
+        <div className="overflow-x-auto rounded-lg border border-border secondary-50">
           <table className="w-full text-sm">
             <thead className="bg-muted/60">
               {table.getHeaderGroups().map((headerGroup) => (

@@ -10,6 +10,8 @@ type RegistrationConfirmationInput = {
   childName: string;
   confirmationNumber: string;
   program: string;
+  portalSetupUrl: string;
+  portalSetupLabel: string;
 };
 
 type RegistrationApprovedInput = {
@@ -62,8 +64,11 @@ export async function sendRegistrationConfirmationEmail(input: RegistrationConfi
       childName: input.childName,
       confirmationNumber: input.confirmationNumber,
       program: input.program,
+      portalSetupUrl: input.portalSetupUrl,
+      portalSetupLabel: input.portalSetupLabel,
       nextSteps: [
         "Our admissions team will review your application.",
+        "Set up your parent portal so payments, messages, and admission updates stay connected to your account.",
         "You will receive an update by email after review.",
         "Keep your confirmation number for follow-up conversations.",
       ],

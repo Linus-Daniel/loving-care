@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { safeNotifyAdmins } from "@/lib/server/notifications";
 import { apiResponse, handleRouteError, paginationParams, parseJson, requireSession } from "@/lib/server/api";
 import { childCreateSchema } from "@/lib/validations/api";
 
@@ -47,6 +48,12 @@ export async function POST(request: Request) {
     await requireSession(["ADMIN", "SUPER_ADMIN"]);
     const data = await parseJson(request, childCreateSchema);
     const child = await prisma.child.create({ data });
+    await safeNotifyAdmins({
+      title: "New enrollment added",
+      message: `${child.firstName} ${child.lastName} was added to ${child.program}.`,
+      type: "enrollment",
+      link: `/admin/children`,
+    });
 
     return apiResponse(child, { status: 201 });
   } catch (error) {

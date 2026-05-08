@@ -49,7 +49,7 @@ export default function RegistrationDetailPage() {
       <Card>
         <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="font-display text-xl font-bold text-green">{registration.childFirstName} {registration.childLastName}</p>
+            <p className="font-display text-xl font-bold text-green-500">{registration.childFirstName} {registration.childLastName}</p>
             <p className="text-sm text-muted-foreground">Submitted by {registration.parentName} on {new Date(registration.createdAt).toLocaleDateString("en-NG")}</p>
           </div>
           <StatusBadge status={registration.status} />

@@ -6,3 +6,16 @@ export async function updateClerkRole(clerkId: string, role: string) {
     publicMetadata: { role },
   });
 }
+
+export async function createParentInvitation(email: string, redirectUrl: string) {
+  const client = await clerkClient();
+
+  return client.invitations.createInvitation({
+    emailAddress: email,
+    expiresInDays: 30,
+    ignoreExisting: true,
+    notify: false,
+    publicMetadata: { role: "PARENT" },
+    redirectUrl,
+  });
+}

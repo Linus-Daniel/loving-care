@@ -1,102 +1,377 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "tw-animate-css";
 
-@layer base {
-  :root {
-    --font-display: "Nunito", ui-rounded, system-ui, sans-serif;
-    --font-body: "DM Sans", ui-sans-serif, system-ui, sans-serif;
-    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+@custom-variant dark (&:is(.dark *));
 
-    --background: #FFF28F;
-    --foreground: #224319;
+@font-face {
+  font-family: "Quicksand";
+  src: url("/fonts/Quicksand/Quicksand-VariableFont_wght.ttf") format("truetype");
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}
 
-    --card: #FFFFFF;
-    --card-foreground: #224319;
+@font-face {
+  font-family: "Nunito";
+  src: url("/fonts/Nunito/Nunito-VariableFont_wght.ttf") format("truetype");
+  font-weight: 200 1000;
+  font-style: normal;
+  font-display: swap;
+}
 
-    --popover: #FFFFFF;
-    --popover-foreground: #224319;
+@font-face {
+  font-family: "Nunito";
+  src: url("/fonts/Nunito/Nunito-Italic-VariableFont_wght.ttf") format("truetype");
+  font-weight: 200 1000;
+  font-style: italic;
+  font-display: swap;
+}
 
-    --primary: #438532;
-    --primary-foreground: #FFFFFF;
+@theme {
+  /* ── Fonts ── */
+  --font-display: "Quicksand", ui-rounded, system-ui, sans-serif;
+  --font-body: "Nunito", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
-    --secondary: #9AD973;
-    --secondary-foreground: #224319;
+  /* ────────────────────────────────────────────────
+     PRIMARY scale (image palette navy)
+     bg-primary | bg-primary-200 | bg-primary-500 …
+  ──────────────────────────────────────────────── */
+  --color-primary-50:       #F1F6F9;
+  --color-primary-100:      #DCE8EE;
+  --color-primary-200:      #B9D6DC;
+  --color-primary-300:      #8FB5C4;
+  --color-primary-400:      #6C8090;
+  --color-primary-DEFAULT:  #21445E;
+  --color-primary-500:      #21445E;
+  --color-primary-600:      #1C394F;
+  --color-primary-700:      #172F41;
+  --color-primary-800:      #102434;
+  --color-primary-900:      #0A1824;
+  --color-primary-foreground: #FFFFFF;
 
-    --muted: #FFF8C2;
-    --muted-foreground: #4C7043;
+  /* Alias → keeps existing `bg-green` / `text-green` classes working */
+  --color-green-50:      var(--color-primary-50);
+  --color-green-100:     var(--color-primary-100);
+  --color-green-200:     var(--color-primary-200);
+  --color-green-300:     var(--color-primary-300);
+  --color-green-400:     var(--color-primary-400);
+  --color-green-DEFAULT: var(--color-primary-DEFAULT);
+  --color-green-500:     var(--color-primary-500);
+  --color-green-600:     var(--color-primary-600);
+  --color-green-700:     var(--color-primary-700);
+  --color-green-800:     var(--color-primary-800);
+  --color-green-900:     var(--color-primary-900);
 
-    --accent: #FFA82E;
-    --accent-foreground: #224319;
+  /* ────────────────────────────────────────────────
+     SECONDARY scale (image palette sky)
+     bg-secondary | bg-secondary-300 …
+  ──────────────────────────────────────────────── */
+  --color-secondary-50:      #F5FAFB;
+  --color-secondary-100:     #E7F2F4;
+  --color-secondary-200:     #B9D6DC;
+  --color-secondary-300:     #98C1CB;
+  --color-secondary-400:     #70A5B4;
+  --color-secondary-DEFAULT: #B9D6DC;
+  --color-secondary-500:     #538B9D;
+  --color-secondary-600:     #3F7182;
+  --color-secondary-700:     #355A75;
+  --color-secondary-800:     #28455B;
+  --color-secondary-900:     #1B3040;
+  --color-secondary-foreground: #21445E;
 
-    --destructive: #EF4343;
-    --destructive-foreground: #FFFFFF;
+  /* Alias → keeps existing `bg-leaf` classes working */
+  --color-leaf-50:      var(--color-secondary-50);
+  --color-leaf-100:     var(--color-secondary-100);
+  --color-leaf-200:     var(--color-secondary-200);
+  --color-leaf-300:     var(--color-secondary-300);
+  --color-leaf-400:     var(--color-secondary-400);
+  --color-leaf-DEFAULT: var(--color-secondary-DEFAULT);
+  --color-leaf-500:     var(--color-secondary-500);
+  --color-leaf-600:     var(--color-secondary-600);
+  --color-leaf-700:     var(--color-secondary-700);
+  --color-leaf-800:     var(--color-secondary-800);
+  --color-leaf-900:     var(--color-secondary-900);
 
-    --border: #BFE7A7;
-    --input: #BFE7A7;
-    --ring: #438532;
+  /* ────────────────────────────────────────────────
+     ACCENT scale (image palette coral)
+     bg-accent | bg-accent-300 …
+  ──────────────────────────────────────────────── */
+  --color-accent-50:      #FFF4EF;
+  --color-accent-100:     #FCE4DA;
+  --color-accent-200:     #F7C8B7;
+  --color-accent-DEFAULT: #EA987B;
+  --color-accent-300:     #EA987B;
+  --color-accent-400:     #DD7755;
+  --color-accent-500:     #C95C39;
+  --color-accent-600:     #A9472B;
+  --color-accent-700:     #833721;
+  --color-accent-800:     #5F2A1B;
+  --color-accent-900:     #401C13;
+  --color-accent-foreground: #FFFFFF;
 
-    --radius: 0.75rem;
+  /* Alias → keeps `bg-yellow` and `bg-cream` working */
+  --color-yellow-50:      var(--color-accent-50);
+  --color-yellow-100:     var(--color-accent-100);
+  --color-yellow-200:     var(--color-accent-200);
+  --color-yellow-DEFAULT: var(--color-accent-DEFAULT);
+  --color-yellow-300:     var(--color-accent-300);
+  --color-yellow-400:     var(--color-accent-400);
+  --color-yellow-500:     var(--color-accent-500);
+  --color-yellow-600:     var(--color-accent-600);
+  --color-yellow-700:     var(--color-accent-700);
+  --color-yellow-800:     var(--color-accent-800);
+  --color-yellow-900:     var(--color-accent-900);
 
-    --success: #438532;
-    --success-foreground: #FFFFFF;
+  --color-cream-50:      var(--color-accent-50);
+  --color-cream-100:     var(--color-accent-100);
+  --color-cream-200:     var(--color-accent-200);
+  --color-cream-DEFAULT: var(--color-accent-DEFAULT);
+  --color-cream-300:     var(--color-accent-300);
+  --color-cream-400:     var(--color-accent-400);
+  --color-cream-500:     var(--color-accent-500);
+  --color-cream-600:     var(--color-accent-600);
+  --color-cream-700:     var(--color-accent-700);
+  --color-cream-800:     var(--color-accent-800);
+  --color-cream-900:     var(--color-accent-900);
 
-    --warning: #FFA82E;
-    --warning-foreground: #224319;
+  /* ── Teal (Legacy / Semantic for specific statuses) ── */
+  --color-teal-50:      var(--color-primary-50);
+  --color-teal-100:     var(--color-primary-100);
+  --color-teal-200:     var(--color-primary-200);
+  --color-teal-300:     var(--color-primary-300);
+  --color-teal-400:     var(--color-primary-400);
+  --color-teal-500:     var(--color-primary-500);
+  --color-teal-600:     var(--color-primary-600);
+  --color-teal-700:     var(--color-primary-700);
+  --color-teal-800:     var(--color-primary-800);
+  --color-teal-900:     var(--color-primary-900);
+  --color-teal-DEFAULT: var(--color-primary-DEFAULT);
+
+  /* ── Surface (image palette sage) ── */
+  --color-surface: #C5D2B2;
+  --color-surface-foreground: #21445E;
+
+  /* ── Orange ── */
+  --color-orange-50:      var(--color-accent-50);
+  --color-orange-100:     var(--color-accent-100);
+  --color-orange-200:     var(--color-accent-200);
+  --color-orange-300:     var(--color-accent-300);
+  --color-orange-400:     var(--color-accent-400);
+  --color-orange-DEFAULT: var(--color-accent-DEFAULT);
+  --color-orange-500:     var(--color-accent-500);
+  --color-orange-600:     var(--color-accent-600);
+  --color-orange-700:     var(--color-accent-700);
+  --color-orange-800:     var(--color-accent-800);
+  --color-orange-900:     var(--color-accent-900);
+
+  /* ── Brand text ── */
+  --color-charcoal: #21445E;
+
+  /* ── Other semantic (CSS-var backed) colors ── */
+  --color-border:      var(--border);
+  --color-input:       var(--input);
+  --color-ring:        var(--ring);
+  --color-background:  var(--background);
+  --color-foreground:  var(--foreground);
+
+  --color-destructive:            var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-warning:            var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+
+  --color-success:            var(--success);
+  --color-success-foreground: var(--success-foreground);
+
+  --color-muted:            var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-popover:            var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-card:            var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-sidebar:                    var(--sidebar-background);
+  --color-sidebar-foreground:         var(--sidebar-foreground);
+  --color-sidebar-primary:            var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent:             var(--sidebar-accent);
+  --color-sidebar-accent-foreground:  var(--sidebar-accent-foreground);
+  --color-sidebar-border:             var(--sidebar-border);
+  --color-sidebar-ring:               var(--sidebar-ring);
+
+  /* ── Border radius ── */
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-xs: calc(var(--radius) - 6px);
+
+  /* ── Box shadow ── */
+  --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-soft: 0 4px 12px -2px rgb(0 0 0 / 0.05), 0 2px 6px -1px rgb(0 0 0 / 0.03);
+  --shadow-card: 0 10px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.05);
+  --shadow-premium: 0 20px 40px -10px rgb(0 0 0 / 0.15), 0 10px 20px -8px rgb(0 0 0 / 0.1);
+
+  /* ── Glassmorphism ── */
+  --blur-sm: 4px;
+  --blur-md: 8px;
+  --blur-lg: 12px;
+  --blur-xl: 20px;
+
+  /* ── Keyframes ── */
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up:   accordion-up   0.2s ease-out;
+  --animate-caret-blink:    caret-blink    1.25s ease-out infinite;
+
+  @keyframes accordion-down {
+    from { height: 0; }
+    to   { height: var(--radix-accordion-content-height); }
   }
 
-  .dark {
-    --background: #1A3414;
-    --foreground: #FFF8C2;
+  @keyframes accordion-up {
+    from { height: var(--radix-accordion-content-height); }
+    to   { height: 0; }
+  }
 
-    --card: #23401C;
-    --card-foreground: #FFF8C2;
-
-    --popover: #23401C;
-    --popover-foreground: #FFF8C2;
-
-    --primary: #9AD973;
-    --primary-foreground: #1A3414;
-
-    --secondary: #346827;
-    --secondary-foreground: #FFF8C2;
-
-    --muted: #2C4C24;
-    --muted-foreground: #C1E0AE;
-
-    --accent: #FFA82E;
-    --accent-foreground: #1A3414;
-
-    --destructive: #DC2828;
-    --destructive-foreground: #FFFFFF;
-
-    --border: #325629;
-    --input: #325629;
-    --ring: #9AD973;
-
-    --success: #9AD973;
-    --success-foreground: #1A3414;
-
-    --warning: #FFA82E;
-    --warning-foreground: #1A3414;
+  @keyframes caret-blink {
+    0%, 70%, 100% { opacity: 1; }
+    20%, 50%      { opacity: 0; }
   }
 }
 
+/* ─────────────────────────────────────────
+   Design tokens (light mode)
+   ───────────────────────────────────────── */
+:root {
+  --background: #fcfcfc;
+  --foreground: #21445E;
+
+  --card: #FFFFFF;
+  --card-foreground: #21445E;
+
+  --popover: #FFFFFF;
+  --popover-foreground: #21445E;
+
+  --muted: #B9D6DC;
+  --muted-foreground: #6C8090;
+
+  --destructive: #EF4343;
+  --destructive-foreground: #FFFFFF;
+
+  --border: #DFDED6;
+  --input: #DFDED6;
+  --ring: #EA987B;
+
+  --radius: 0.75rem;
+
+  --success: #21445E;
+  --success-foreground: #FFFFFF;
+
+  --warning: #EEBE61;
+  --warning-foreground: #21445E;
+}
+
+.dark {
+  --background: #0A1824;
+  --foreground: #FBF6EF;
+
+  --card: #102434;
+  --card-foreground: #FBF6EF;
+
+  --popover: #102434;
+  --popover-foreground: #FBF6EF;
+
+  --muted: #172F41;
+  --muted-foreground: #B9D6DC;
+
+  --destructive: #DC2828;
+  --destructive-foreground: #FFFFFF;
+
+  --border: #21445E;
+  --input: #21445E;
+  --ring: #EA987B;
+
+  --success: #B9D6DC;
+  --success-foreground: #0A1824;
+
+  --warning: #EEBE61;
+  --warning-foreground: #0A1824;
+
+  /* Overrides for @theme colors in dark mode */
+  --color-primary-DEFAULT: #B9D6DC;
+  --color-primary-foreground: #0A1824;
+  --color-secondary-DEFAULT: #C5D2B2;
+  --color-secondary-foreground: #21445E;
+}
+
+/* ─────────────────────────────────────────
+   Base styles
+   ───────────────────────────────────────── */
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border outline-ring/50;
   }
 
   body {
-    @apply bg-background text-foreground font-body;
+    @apply bg-background text-foreground font-body antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    @apply font-display;
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display tracking-tight;
+  }
+}
+
+@layer utilities {
+  .secondary-50 {
+    background-color: var(--color-secondary-50);
+  }
+
+  .secondary-50\/5 {
+    background-color: color-mix(in srgb, var(--color-secondary-50) 5%, transparent);
+  }
+
+  .secondary-50\/10 {
+    background-color: color-mix(in srgb, var(--color-secondary-50) 10%, transparent);
+  }
+
+  .secondary-50\/20 {
+    background-color: color-mix(in srgb, var(--color-secondary-50) 20%, transparent);
+  }
+
+  .secondary-50\/80 {
+    background-color: color-mix(in srgb, var(--color-secondary-50) 80%, transparent);
+  }
+
+  .hover\:secondary-50:hover {
+    background-color: var(--color-secondary-50);
+  }
+
+  .hover\:secondary-50\/10:hover {
+    background-color: color-mix(in srgb, var(--color-secondary-50) 10%, transparent);
+  }
+
+  .hover\:secondary-50\/20:hover {
+    background-color: color-mix(in srgb, var(--color-secondary-50) 20%, transparent);
+  }
+
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/20 dark:bg-black/40 dark:border-white/10;
+  }
+  
+  .glass-dark {
+    @apply bg-black/40 backdrop-blur-md border border-white/10;
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(to right, var(--color-primary-500), var(--color-secondary-500));
   }
 }

@@ -34,69 +34,92 @@ export default function AttendanceReportsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 max-w-[1600px] mx-auto pb-12">
       <PageHeader
         title="Attendance Reports"
         description="Analyze attendance totals by status and export the full report."
-        action={<Button onClick={exportCsv} disabled={records.length === 0}>Export CSV</Button>}
+        action={<Button onClick={exportCsv} disabled={records.length === 0} className="shadow-soft hover:shadow-md transition-all">Export CSV</Button>}
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {chartData.map((item) => (
-          <Card key={item.status}>
-            <CardContent className="p-4">
+          <Card key={item.status} className="shadow-soft border-primary/5 hover:shadow-card transition-all duration-300">
+            <CardContent className="p-6">
               <StatusBadge status={item.status} />
-              <p className="mt-3 text-3xl font-bold text-green">{item.count}</p>
+              <p className="mt-4 text-4xl font-bold text-primary tracking-tight">{item.count}</p>
+              <p className="text-xs text-muted-foreground mt-1 font-medium">Total records</p>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Attendance by Status</CardTitle>
+      <Card className="shadow-soft border-primary/5">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg font-display font-bold text-primary">Attendance by Status</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-72">
+          <div className="h-80 pt-6">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="status" />
-                <YAxis allowDecimals={false} />
-                <Tooltip />
-                <Bar dataKey="count" fill="#2A9D8F" radius={[6, 6, 0, 0]} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
+                <XAxis 
+                  dataKey="status" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }} 
+                  dy={10}
+                />
+                <YAxis 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }} 
+                  allowDecimals={false} 
+                />
+                <Tooltip 
+                  contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "var(--shadow-card)" }}
+                />
+                <Bar dataKey="count" fill="var(--color-primary-500)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardContent className="overflow-x-auto p-0">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b bg-muted/50 text-left">
-                <th className="px-4 py-3">Date</th>
-                <th className="px-4 py-3">Child</th>
-                <th className="px-4 py-3">Class</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              {isLoading ? (
-                <tr><td colSpan={5} className="p-6 text-center text-muted-foreground">Loading attendance...</td></tr>
-              ) : records.map((record) => (
-                <tr key={record.id} className="border-b last:border-0">
-                  <td className="px-4 py-3">{new Date(record.date).toLocaleDateString("en-NG")}</td>
-                  <td className="px-4 py-3">{record.child ? `${record.child.firstName} ${record.child.lastName}` : "Unknown"}</td>
-                  <td className="px-4 py-3">{record.child?.program ?? "-"}</td>
-                  <td className="px-4 py-3"><StatusBadge status={record.status} /></td>
-                  <td className="px-4 py-3 text-muted-foreground">{record.notes ?? "No notes"}</td>
+      <Card className="shadow-soft border-primary/5 overflow-hidden">
+        <CardHeader className="bg-muted/30 pb-3">
+          <CardTitle className="text-lg font-display font-bold text-primary">Detailed Log</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b bg-muted/10 text-left">
+                  <th className="px-6 py-4 font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">Date</th>
+                  <th className="px-6 py-4 font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">Child</th>
+                  <th className="px-6 py-4 font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">Class</th>
+                  <th className="px-6 py-4 font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">Status</th>
+                  <th className="px-6 py-4 font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">Notes</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-border/40">
+                {isLoading ? (
+                  <tr><td colSpan={5} className="p-12 text-center text-muted-foreground font-medium">Loading attendance records...</td></tr>
+                ) : records.length === 0 ? (
+                  <tr><td colSpan={5} className="p-12 text-center text-muted-foreground font-medium">No records found.</td></tr>
+                ) : records.map((record) => (
+                  <tr key={record.id} className="hover:bg-primary/5 transition-colors">
+                    <td className="px-6 py-4 font-medium">{new Date(record.date).toLocaleDateString("en-NG", { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                    <td className="px-6 py-4">
+                      <span className="font-semibold text-foreground">{record.child ? `${record.child.firstName} ${record.child.lastName}` : "Unknown"}</span>
+                    </td>
+                    <td className="px-6 py-4 text-muted-foreground font-medium">{record.child?.program ?? "-"}</td>
+                    <td className="px-6 py-4"><StatusBadge status={record.status} /></td>
+                    <td className="px-6 py-4 text-muted-foreground max-w-xs truncate">{record.notes ?? "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </CardContent>
       </Card>
     </div>

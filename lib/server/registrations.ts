@@ -4,18 +4,43 @@ import { sendRegistrationApprovedEmail } from "@/lib/server/email";
 
 type PrismaTransaction = Parameters<Parameters<PrismaClient["$transaction"]>[0]>[0];
 
-export async function approveRegistration(tx: PrismaTransaction, registration: Registration) {
-  const user = await tx.user.upsert({
-    where: { email: registration.parentEmail },
-    update: { name: registration.parentName, phone: registration.parentPhone, role: "PARENT" },
-    create: {
-      clerkId: `pending:${registration.parentEmail}`,
-      email: registration.parentEmail,
+export function normalizeEmail(email: string) {
+  return email.trim().toLowerCase();
+}
+
+export function pendingClerkId(email: string) {
+  return `pending:${normalizeEmail(email)}`;
+}
+
+export async function ensureParentAccountForRegistration(tx: PrismaTransaction, registration: Registration) {
+  const email = normalizeEmail(registration.parentEmail);
+
+  const existingUser = await tx.user.findUnique({ where: { email } });
+
+  if (existingUser) {
+    return tx.user.update({
+      where: { email },
+      data: {
+        email,
+        name: registration.parentName,
+        phone: registration.parentPhone,
+      },
+    });
+  }
+
+  return tx.user.create({
+    data: {
+      clerkId: pendingClerkId(email),
+      email,
       name: registration.parentName,
       phone: registration.parentPhone,
       role: "PARENT",
     },
   });
+}
+
+export async function approveRegistration(tx: PrismaTransaction, registration: Registration) {
+  const user = await ensureParentAccountForRegistration(tx, registration);
 
   const existingChild = await tx.child.findFirst({
     where: {

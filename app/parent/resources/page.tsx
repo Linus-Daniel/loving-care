@@ -53,7 +53,7 @@ export default function Resources() {
             key={category}
             onClick={() => setFilter(category)}
             className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-              filter === category ? "bg-yellow text-green" : "bg-muted text-muted-foreground"
+              filter === category ? "bg-secondary text-green-500" : "bg-muted text-muted-foreground"
             }`}
           >
             {category}
@@ -70,8 +70,8 @@ export default function Resources() {
           {filtered.map((resource) => (
             <Card key={resource.id} className="shadow-card">
               <CardContent className="flex items-center gap-3 p-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-green/10">
-                  <FileText className="h-5 w-5 text-green" />
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-green-500/10">
+                  <FileText className="h-5 w-5 text-green-500" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{resource.name}</p>

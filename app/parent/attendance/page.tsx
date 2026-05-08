@@ -93,7 +93,7 @@ export default function ParentAttendancePage() {
             <CardContent className="p-5">
               <p className="text-sm capitalize text-muted-foreground">{item.status.toLowerCase()}</p>
               <div className="mt-3 flex items-center justify-between">
-                <span className="text-3xl font-bold text-green">{item.count}</span>
+                <span className="text-3xl font-bold text-green-500">{item.count}</span>
                 <StatusBadge status={item.status} />
               </div>
             </CardContent>

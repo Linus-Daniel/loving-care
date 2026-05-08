@@ -1,4 +1,4 @@
-import { Text } from "@react-email/components";
+import { Link, Text } from "@react-email/components";
 
 import { EmailShell } from "./EmailShell";
 
@@ -7,6 +7,8 @@ type Props = {
   childName: string;
   confirmationNumber: string;
   program: string;
+  portalSetupUrl: string;
+  portalSetupLabel: string;
   nextSteps: string[];
 };
 
@@ -15,6 +17,8 @@ export default function RegistrationConfirmation({
   childName,
   confirmationNumber,
   program,
+  portalSetupUrl,
+  portalSetupLabel,
   nextSteps,
 }: Props) {
   return (
@@ -23,6 +27,10 @@ export default function RegistrationConfirmation({
       <Text>
         We received {childName}&apos;s registration for {program}. Your confirmation number is{" "}
         <strong>{confirmationNumber}</strong>.
+      </Text>
+      <Text>
+        Next, <Link href={portalSetupUrl}>{portalSetupLabel}</Link>. This keeps future payments, messages, and
+        enrollment updates connected to your family profile.
       </Text>
       {nextSteps.map((step) => (
         <Text key={step}>- {step}</Text>

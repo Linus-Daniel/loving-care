@@ -84,7 +84,7 @@ export default function Settings() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl lg:text-2xl font-display font-bold text-green">Account Settings</h1>
+        <h1 className="text-xl lg:text-2xl font-display font-bold text-green-500">Account Settings</h1>
         <p className="text-sm text-muted-foreground">Manage your profile, security, and preferences</p>
       </div>
 
@@ -98,7 +98,7 @@ export default function Settings() {
 
         <TabsContent value="profile">
           <Card className="shadow-soft">
-            <CardHeader className="pb-3"><CardTitle className="text-base font-display text-green">Profile Information</CardTitle></CardHeader>
+            <CardHeader className="pb-3"><CardTitle className="text-base font-display text-green-500">Profile Information</CardTitle></CardHeader>
             <CardContent className="space-y-6">
               {isLoading ? (
                 <LoadingTable columns={3} rows={3} />
@@ -107,7 +107,7 @@ export default function Settings() {
               <div className="flex items-center gap-4">
                 <div className="relative">
                   <Avatar className="w-16 h-16"><AvatarImage src={avatar} /><AvatarFallback>{initials}</AvatarFallback></Avatar>
-                  <button className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-green text-white flex items-center justify-center"><Camera className="w-3 h-3" /></button>
+                  <button className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center"><Camera className="w-3 h-3" /></button>
                 </div>
                 <div>
                   <p className="font-medium">Profile Photo</p>
@@ -125,7 +125,7 @@ export default function Settings() {
                         toast.error(error.message);
                       }}
                       appearance={{
-                        button: "bg-green text-white h-8 w-32 text-xs",
+                        button: "bg-green-500 text-white h-8 w-32 text-xs",
                         allowedContent: "text-xs text-muted-foreground",
                       }}
                     />
@@ -137,7 +137,7 @@ export default function Settings() {
                 <div className="space-y-2"><Label>Email</Label><Input value={profile.email} readOnly className="bg-muted" /></div>
                 <div className="space-y-2"><Label>Phone</Label><Input value={profile.phone} onChange={(e) => setProfile({ ...profile, phone: e.target.value })} /></div>
               </div>
-              <Button className="bg-green text-white" onClick={handleSaveProfile} disabled={updateProfile.isPending}>
+              <Button className="bg-green-500 text-white" onClick={handleSaveProfile} disabled={updateProfile.isPending}>
                 {updateProfile.isPending ? 'Saving...' : 'Save Changes'}
               </Button>
                 </>
@@ -148,13 +148,13 @@ export default function Settings() {
 
         <TabsContent value="security">
           <Card className="shadow-soft">
-            <CardHeader className="pb-3"><CardTitle className="text-base font-display text-green">Security Settings</CardTitle></CardHeader>
+            <CardHeader className="pb-3"><CardTitle className="text-base font-display text-green-500">Security Settings</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
                 <div><p className="text-sm font-medium">Two-Factor Authentication</p><p className="text-xs text-muted-foreground">Managed securely by Clerk</p></div>
                 <Switch checked={user?.totpEnabled ?? false} disabled />
               </div>
-              <Button className="bg-green text-white" asChild>
+              <Button className="bg-green-500 text-white" asChild>
                 <a href="/user-profile">Manage Security</a>
               </Button>
             </CardContent>
@@ -163,7 +163,7 @@ export default function Settings() {
 
         <TabsContent value="notifications">
           <Card className="shadow-soft">
-            <CardHeader className="pb-3"><CardTitle className="text-base font-display text-green">Notification Preferences</CardTitle></CardHeader>
+            <CardHeader className="pb-3"><CardTitle className="text-base font-display text-green-500">Notification Preferences</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               {[
                 { label: 'Payment Reminders', email: 'emailPayments', inApp: 'inAppPayments' },
@@ -178,14 +178,14 @@ export default function Settings() {
                   </div>
                 </div>
               ))}
-              <Button className="bg-green text-white" onClick={() => toast.success('Preferences saved')}>Save Preferences</Button>
+              <Button className="bg-green-500 text-white" onClick={() => toast.success('Preferences saved')}>Save Preferences</Button>
             </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent value="privacy">
           <Card className="shadow-soft">
-            <CardHeader className="pb-3"><CardTitle className="text-base font-display text-green">Privacy Settings</CardTitle></CardHeader>
+            <CardHeader className="pb-3"><CardTitle className="text-base font-display text-green-500">Privacy Settings</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div className="p-3 bg-muted rounded-lg">
                 <p className="text-sm font-medium mb-1">Download Your Data</p>

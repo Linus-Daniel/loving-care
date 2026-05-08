@@ -87,6 +87,7 @@ export const paymentIntentSchema = z.object({
   amount: z.number().positive(),
   currency: z.string().default("ngn"),
   description: z.string().min(1),
+  metadata: z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.null()])).optional(),
 });
 
 export const paymentRefundSchema = z.object({
@@ -185,6 +186,7 @@ export const notificationPatchSchema = z.object({
 
 export const notificationBulkPatchSchema = z.object({
   isRead: z.literal(true),
+  type: z.string().optional(),
 });
 
 export const staffCreateSchema = z.object({

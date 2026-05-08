@@ -1,11 +1,26 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-export default clerkMiddleware((auth, req) => {
+const isPublicRoute = createRouteMatcher([
+  "/",
+  "/login(.*)",
+  "/admin-login(.*)",
+  "/register(.*)",
+  "/api/webhooks(.*)",
+  "/favicon.ico",
+]);
+
+export const proxy = clerkMiddleware(async (auth, req) => {
+  const { pathname } = new URL(req.url);
+
+  if (!isPublicRoute(req)) {
+    await auth.protect();
+  }
+
+  // Set headers on the request for Server Components to read
   const requestHeaders = new Headers(req.headers);
   requestHeaders.set("x-url", req.url);
-  const url = new URL(req.url);
-  requestHeaders.set("x-invoke-path", url.pathname);
+  requestHeaders.set("x-invoke-path", pathname);
 
   return NextResponse.next({
     request: {
@@ -16,14 +31,9 @@ export default clerkMiddleware((auth, req) => {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico, sitemap.xml, robots.txt (metadata files)
-     */
-    "/((?!_next|static|favicon.ico|sitemap.xml|robots.txt|.*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    "/(api|trpc)(.*)",
+    // Skip Next.js internals and all static files, unless found in search params
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
   ],
 };

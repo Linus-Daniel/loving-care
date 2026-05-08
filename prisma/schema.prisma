@@ -101,6 +101,7 @@ model Attendance {
   createdAt DateTime         @default(now())
 
   @@unique([childId, date])
+  @@index([date])
 }
 
 model Payment {

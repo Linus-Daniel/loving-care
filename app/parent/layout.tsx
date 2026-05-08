@@ -1,4 +1,4 @@
-import { auth, clerkClient } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { ParentShell } from "@/components/parent/ParentShell";
@@ -11,32 +11,31 @@ export default async function ParentLayout({
 }) {
   const { userId } = await auth();
   const headerList = await headers();
-  const pathname = headerList.get("x-invoke-path") || "";
+  const pathname = headerList.get("x-invoke-path") || "/parent";
 
   if (!userId) {
-    const currentPath = pathname || "/parent";
-    redirect(`/login?redirect_url=${encodeURIComponent(currentPath)}`);
+    redirect(`/login?redirect_url=${encodeURIComponent(pathname)}`);
   }
 
-  // Fetch user role from Clerk or Prisma
-  const client = await clerkClient();
-  const user = await client.users.getUser(userId);
-  
-  // Check role from metadata or fallback to Prisma
-  let role = (user.publicMetadata?.role as string) || (user.unsafeMetadata?.role as string);
-  
-  if (!role) {
-    const dbUser = await prisma.user.findUnique({
-      where: { clerkId: userId },
-      select: { role: true },
-    });
-    role = dbUser?.role || "PARENT";
+  // Resolve role and user info from DB — avoids dependency on Clerk backend API
+  // which can fail if CLERK_SECRET_KEY is missing or rate-limited.
+  const dbUser = await prisma.user.findUnique({
+    where: { clerkId: userId },
+    select: { id: true, name: true, email: true, avatar: true, role: true },
+  });
+
+  const role = dbUser?.role ?? "PARENT";
+
+  // Enforce: admins/staff must NOT use the parent portal
+  const adminRoles = ["ADMIN", "SUPER_ADMIN", "STAFF"];
+  if (adminRoles.includes(role)) {
+    redirect("/admin/dashboard");
   }
 
   const shellUser = {
-    fullName: user.fullName || `${user.firstName} ${user.lastName}`.trim() || user.primaryEmailAddress?.emailAddress || "Parent",
-    imageUrl: user.imageUrl,
-    role: role,
+    fullName: dbUser?.name ?? "Parent",
+    imageUrl: dbUser?.avatar ?? null,
+    role,
   };
 
   return <ParentShell user={shellUser}>{children}</ParentShell>;

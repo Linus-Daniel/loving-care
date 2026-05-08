@@ -1,8 +1,32 @@
 import { prisma } from "@/lib/prisma";
+import { createParentInvitation } from "@/lib/clerk";
 import { sendRegistrationConfirmationEmail } from "@/lib/server/email";
-import { approveRegistration, sendApprovalEmail } from "@/lib/server/registrations";
+import { safeNotifyAdmins } from "@/lib/server/notifications";
+import {
+  approveRegistration,
+  ensureParentAccountForRegistration,
+  normalizeEmail,
+  sendApprovalEmail,
+} from "@/lib/server/registrations";
 import { apiResponse, handleRouteError, paginationParams, parseJson, requireSession } from "@/lib/server/api";
 import { registrationBulkPatchSchema, registrationCreateSchema } from "@/lib/validations/api";
+
+function appUrl(path = "") {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  return `${baseUrl}${path}`;
+}
+
+async function getParentSetupUrl(email: string, hasActiveAccount: boolean) {
+  if (hasActiveAccount) return appUrl("/login");
+
+  try {
+    const invitation = await createParentInvitation(email, appUrl("/parent"));
+    return invitation.url ?? appUrl("/signup");
+  } catch (error) {
+    console.warn("Unable to create Clerk parent invitation", error);
+    return appUrl("/signup");
+  }
+}
 
 export async function GET(request: Request) {
   try {
@@ -25,14 +49,31 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const data = await parseJson(request, registrationCreateSchema);
-    const registration = await prisma.registration.create({ data });
+    const parsed = await parseJson(request, registrationCreateSchema);
+    const data = { ...parsed, parentEmail: normalizeEmail(parsed.parentEmail) };
+    const { registration, parentAccount } = await prisma.$transaction(async (tx) => {
+      const registration = await tx.registration.create({ data });
+      const parentAccount = await ensureParentAccountForRegistration(tx, registration);
+
+      return { registration, parentAccount };
+    });
+    const hasActiveAccount = !parentAccount.clerkId.startsWith("pending:");
+    const portalSetupUrl = await getParentSetupUrl(registration.parentEmail, hasActiveAccount);
+
+    await safeNotifyAdmins({
+      title: "New registration submitted",
+      message: `${registration.parentName} submitted ${registration.childFirstName} ${registration.childLastName} for ${registration.program}.`,
+      type: "registration",
+      link: `/admin/registrations/${registration.id}`,
+    });
     await sendRegistrationConfirmationEmail({
       parentName: registration.parentName,
       parentEmail: registration.parentEmail,
       childName: `${registration.childFirstName} ${registration.childLastName}`,
       confirmationNumber: registration.id,
       program: registration.program,
+      portalSetupUrl,
+      portalSetupLabel: hasActiveAccount ? "Sign in to your parent portal" : "Set up your parent portal",
     });
 
     return apiResponse(registration, { status: 201 });

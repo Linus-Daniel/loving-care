@@ -34,11 +34,11 @@ export default function CmsPage() {
             <Card key={document.type} className="shadow-card">
               <CardContent className="space-y-3 p-5">
                 <div className="flex items-start gap-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-green/10 text-green">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-green-500/10 text-green-500">
                     <Icon className="h-5 w-5" />
                   </span>
                   <div>
-                    <p className="font-display text-lg font-bold text-green">{document.name}</p>
+                    <p className="font-display text-lg font-bold text-green-500">{document.name}</p>
                     <p className="font-mono text-xs text-teal">{document.type}</p>
                   </div>
                 </div>

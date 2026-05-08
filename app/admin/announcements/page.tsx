@@ -161,7 +161,7 @@ export default function AnnouncementsPage() {
         }
       />
 
-      <div className="rounded-lg border bg-yellow/10 p-4 text-sm text-green">
+      <div className="rounded-lg border bg-secondary/10 p-4 text-sm text-green-500">
         <Megaphone className="mr-2 inline h-4 w-4" />
         Published announcements also create in-app notifications for the selected role.
       </div>

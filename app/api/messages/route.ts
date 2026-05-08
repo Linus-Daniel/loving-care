@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { apiError, apiResponse, handleRouteError, parseJson, requireSession } from "@/lib/server/api";
+import { safeNotifyAdmins } from "@/lib/server/notifications";
 import { messageCreateSchema } from "@/lib/validations/api";
 
 export async function GET(request: Request) {
@@ -63,13 +64,24 @@ export async function POST(request: Request) {
     }
 
     if (!receiverId) return apiError("Receiver not found", 404);
-    const receiver = await prisma.user.findUnique({ where: { id: receiverId }, select: { id: true } });
+    const receiver = await prisma.user.findUnique({ where: { id: receiverId }, select: { id: true, role: true } });
     if (!receiver) return apiError("Receiver not found", 404);
 
     const threadId = data.threadId ?? [session.userId, receiverId].sort().join(":");
     const message = await prisma.message.create({
       data: { senderId: session.userId, receiverId, content: data.content, threadId },
     });
+
+    const adminRoles = ["ADMIN", "SUPER_ADMIN", "STAFF"];
+    if (session.role === "PARENT" && adminRoles.includes(receiver.role)) {
+      await safeNotifyAdmins({
+        title: "New parent message",
+        message: data.content.length > 90 ? `${data.content.slice(0, 90)}...` : data.content,
+        type: "message",
+        link: "/admin/messages",
+        userIds: [receiver.id],
+      });
+    }
 
     return apiResponse(message, { status: 201 });
   } catch (error) {

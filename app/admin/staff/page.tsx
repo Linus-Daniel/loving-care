@@ -73,7 +73,7 @@ export default function ManageStaff() {
         title="Manage Staff"
         description="View and manage staff members"
         action={
-          <Button className="bg-yellow font-semibold text-green hover:bg-yellow-400">
+          <Button className="bg-secondary font-semibold text-green-500 hover:bg-secondary-400">
             <Plus className="mr-2 h-4 w-4" />
             Add Staff
           </Button>

@@ -84,11 +84,11 @@ export default function AdminPayments() {
         <Card className="shadow-card"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Total Collected</p><p className="text-2xl font-bold text-success">{money(totalCollected)}</p></CardContent></Card>
         <Card className="shadow-card"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Pending</p><p className="text-2xl font-bold text-warning">{money(pending)}</p></CardContent></Card>
         <Card className="shadow-card"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Failed</p><p className="text-2xl font-bold text-destructive">{money(failed)}</p></CardContent></Card>
-        <Card className="shadow-card"><CardContent className="p-4"><p className="text-xs text-muted-foreground">This Month</p><p className="text-2xl font-bold text-green">{money(thisMonth)}</p></CardContent></Card>
+        <Card className="shadow-card"><CardContent className="p-4"><p className="text-xs text-muted-foreground">This Month</p><p className="text-2xl font-bold text-green-500">{money(thisMonth)}</p></CardContent></Card>
       </div>
 
       <Card className="shadow-card">
-        <CardHeader className="pb-2"><CardTitle className="font-display text-base text-green">Revenue by Month</CardTitle></CardHeader>
+        <CardHeader className="pb-2"><CardTitle className="font-display text-base text-green-500">Revenue by Month</CardTitle></CardHeader>
         <CardContent>
           <div className="h-[220px] w-full">
             <ResponsiveContainer width="100%" height="100%">

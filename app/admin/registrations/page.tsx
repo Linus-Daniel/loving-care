@@ -68,7 +68,11 @@ export default function Registrations() {
             <Button
               size="sm"
               variant="outline"
-              className="h-8 border-success text-success hover:bg-success hover:text-white"
+              className={`h-8 border-success text-success transition-all ${
+                row.original.status === "APPROVED" 
+                ? "opacity-50 cursor-not-allowed bg-muted grayscale border-muted text-muted-foreground" 
+                : "hover:bg-success hover:text-white"
+              }`}
               disabled={updateRegistration.isPending || row.original.status === "APPROVED"}
               onClick={() => updateStatus(row.original.id, "APPROVED")}
             >
@@ -78,7 +82,11 @@ export default function Registrations() {
             <Button
               size="sm"
               variant="outline"
-              className="h-8 border-destructive text-destructive hover:bg-destructive hover:text-white"
+              className={`h-8 border-destructive text-destructive transition-all ${
+                row.original.status === "REJECTED" 
+                ? "opacity-50 cursor-not-allowed bg-muted grayscale border-muted text-muted-foreground" 
+                : "hover:bg-destructive hover:text-white"
+              }`}
               disabled={updateRegistration.isPending || row.original.status === "REJECTED"}
               onClick={() => updateStatus(row.original.id, "REJECTED")}
             >
@@ -102,7 +110,7 @@ export default function Registrations() {
             key={item}
             onClick={() => setFilter(item)}
             className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-              filter === item ? "bg-yellow text-green" : "bg-muted text-muted-foreground"
+              filter === item ? "bg-secondary text-green-500" : "bg-muted text-muted-foreground"
             }`}
           >
             {item}

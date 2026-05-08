@@ -3,6 +3,7 @@ import { Webhook } from "svix";
 import { updateClerkRole } from "@/lib/clerk";
 import { prisma } from "@/lib/prisma";
 import { apiResponse, handleRouteError } from "@/lib/server/api";
+import { normalizeEmail } from "@/lib/server/registrations";
 
 type ClerkUserCreated = {
   id: string;
@@ -28,23 +29,25 @@ export async function POST(request: Request) {
           ?.email_address ?? event.data.email_addresses?.[0]?.email_address;
 
       if (primaryEmail) {
+        const email = normalizeEmail(primaryEmail);
         const role =
           (event.data.public_metadata?.role as "PARENT" | "ADMIN" | "SUPER_ADMIN" | "STAFF" | undefined) ??
           (event.data.unsafe_metadata?.role as "PARENT" | "ADMIN" | "SUPER_ADMIN" | "STAFF" | undefined) ??
           "PARENT";
 
         await prisma.user.upsert({
-          where: { email: primaryEmail },
+          where: { email },
           update: {
             clerkId: event.data.id,
-            name: [event.data.first_name, event.data.last_name].filter(Boolean).join(" ") || primaryEmail,
+            email,
+            name: [event.data.first_name, event.data.last_name].filter(Boolean).join(" ") || email,
             avatar: event.data.image_url,
             role,
           },
           create: {
             clerkId: event.data.id,
-            email: primaryEmail,
-            name: [event.data.first_name, event.data.last_name].filter(Boolean).join(" ") || primaryEmail,
+            email,
+            name: [event.data.first_name, event.data.last_name].filter(Boolean).join(" ") || email,
             avatar: event.data.image_url,
             role,
           },

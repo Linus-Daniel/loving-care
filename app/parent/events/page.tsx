@@ -56,12 +56,12 @@ export default function ParentEvents() {
                 <CardContent className="p-5">
                   <div className="mb-3 flex items-start justify-between">
                     <Badge variant="outline" className="border-teal text-teal">{registered ? "My Registered Event" : "All Event"}</Badge>
-                    <div className="rounded-lg bg-green px-3 py-1.5 text-center">
-                      <p className="text-xs font-bold text-yellow">{date.toLocaleString("default", { month: "short" })}</p>
+                    <div className="rounded-lg bg-green-500 px-3 py-1.5 text-center">
+                      <p className="text-xs font-bold text-secondary">{date.toLocaleString("default", { month: "short" })}</p>
                       <p className="text-lg font-bold text-white">{date.getDate()}</p>
                     </div>
                   </div>
-                  <h3 className="mb-1 font-display font-semibold text-green">{event.title}</h3>
+                  <h3 className="mb-1 font-display font-semibold text-green-500">{event.title}</h3>
                   <p className="mb-3 text-sm text-muted-foreground">{event.description}</p>
                   <div className="mb-4 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{event.time ?? "All day"}</span>
@@ -70,7 +70,7 @@ export default function ParentEvents() {
                   <div className="flex items-center justify-between">
                     <Button
                       variant={registered ? "outline" : "default"}
-                      className={registered ? "border-destructive text-destructive" : "bg-yellow text-green hover:bg-yellow-400"}
+                      className={registered ? "border-destructive text-destructive" : "bg-secondary text-green-500 hover:bg-secondary-400"}
                       size="sm"
                       disabled={register.isPending || unregister.isPending}
                       onClick={() => toggleRegister(event.id, registered)}

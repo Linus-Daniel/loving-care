@@ -60,10 +60,10 @@ export default function SocialPage() {
               <CardContent className="space-y-4 p-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green/10">
-                      <Icon className="h-5 w-5 text-green" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/10">
+                      <Icon className="h-5 w-5 text-green-500" />
                     </div>
-                    <p className="font-semibold text-green">{platform.label}</p>
+                    <p className="font-semibold text-green-500">{platform.label}</p>
                   </div>
                   <Switch
                     checked={value.enabled}
@@ -105,7 +105,7 @@ export default function SocialPage() {
       <Card>
         <CardContent className="space-y-4 p-5">
           <div>
-            <p className="font-semibold text-green">Share buttons</p>
+            <p className="font-semibold text-green-500">Share buttons</p>
             <p className="text-sm text-muted-foreground">Choose which public pages show share buttons.</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-3">

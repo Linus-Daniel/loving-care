@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -11,6 +11,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useClerk } from '@clerk/nextjs';
+import { useMarkAllNotificationsRead, useNotifications, useRealtimeNotifications } from '@/hooks/useNotifications';
 
 const sidebarSections = [
   {
@@ -72,6 +73,20 @@ const sidebarSections = [
   },
 ];
 
+const notificationTypeByHref: Record<string, string> = {
+  "/admin/payments": "payment",
+  "/admin/messages": "message",
+  "/admin/registrations": "registration",
+  "/admin/children": "enrollment",
+};
+
+const notificationColorByType: Record<string, string> = {
+  payment: "bg-emerald-300",
+  message: "bg-red-400",
+  registration: "bg-red-400",
+  enrollment: "bg-red-400",
+};
+
 interface AdminShellProps {
   children: React.ReactNode;
   user: {
@@ -85,6 +100,18 @@ export function AdminShell({ children, user }: AdminShellProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
   const { signOut } = useClerk();
+  const { data: unreadNotifications = [] } = useNotifications({ unreadOnly: true });
+  const markNotificationsRead = useMarkAllNotificationsRead();
+  useRealtimeNotifications();
+
+  const unreadCounts = useMemo(() => {
+    return unreadNotifications.reduce<Record<string, number>>((counts, notification) => {
+      counts[notification.type] = (counts[notification.type] ?? 0) + 1;
+      return counts;
+    }, {});
+  }, [unreadNotifications]);
+
+  const totalUnread = unreadNotifications.length;
 
   const displayName = user.fullName || "Admin";
   const initials = displayName
@@ -98,18 +125,49 @@ export function AdminShell({ children, user }: AdminShellProps) {
     await signOut({ redirectUrl: "/" });
   };
 
+  const markSectionRead = useCallback((href: string) => {
+    const type = notificationTypeByHref[href];
+    if (!type || !unreadCounts[type] || markNotificationsRead.isPending) return;
+    markNotificationsRead.mutate(type);
+  }, [markNotificationsRead, unreadCounts]);
+
+  useEffect(() => {
+    const matchingHref = Object.keys(notificationTypeByHref)
+      .sort((a, b) => b.length - a.length)
+      .find((href) => pathname.startsWith(href));
+
+    if (matchingHref) {
+      markSectionRead(matchingHref);
+    }
+  }, [markSectionRead, pathname]);
+
+  const renderNotificationMarker = (href: string, active: boolean) => {
+    const type = notificationTypeByHref[href];
+    const count = type ? unreadCounts[type] ?? 0 : 0;
+    if (!type || count === 0) return null;
+
+    return (
+      <span className="ml-auto flex min-w-5 items-center justify-end gap-1">
+        <span className={`h-2 w-2 rounded-full ${notificationColorByType[type] ?? "bg-red-400"}`} />
+        <span className={`text-[10px] font-bold ${active ? "text-green-500" : "text-white"}`}>
+          {count > 9 ? "9+" : count}
+        </span>
+      </span>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-background flex">
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex flex-col w-72 bg-green text-white fixed h-screen overflow-y-auto">
+      <aside className="hidden lg:flex flex-col w-72 bg-green-500 text-white fixed h-screen overflow-y-auto">
         <div className="p-4 border-b border-white/10">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-yellow flex items-center justify-center">
-              <Heart className="w-4 h-4 text-green" fill="currentColor" />
+            <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
+              <Heart className="w-4 h-4 text-green-500" fill="currentColor" />
             </div>
             <div>
               <span className="font-display font-bold text-sm leading-tight block">Loving Family</span>
-              <span className="text-[9px] uppercase tracking-wider text-yellow -mt-0.5 block">Admin Portal</span>
+              <span className="text-[9px] uppercase tracking-wider text-secondary -mt-0.5 block">Admin Portal</span>
             </div>
           </Link>
         </div>
@@ -119,7 +177,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
             <Input
               placeholder="Search..."
-              className="pl-9 yellow-50/10 border-white/10 text-white placeholder:text-white/40 text-sm"
+              className="pl-9 secondary-50/10 border-white/10 text-white placeholder:text-white/40 text-sm"
             />
           </div>
         </div>
@@ -138,14 +196,16 @@ export function AdminShell({ children, user }: AdminShellProps) {
                     <Link
                       key={item.href}
                       href={item.href}
+                      onClick={() => markSectionRead(item.href)}
                       className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                         active
-                          ? 'bg-yellow text-green'
-                          : 'text-white/80 hover:yellow-50/10 hover:text-white'
+                          ? 'bg-secondary text-green-500'
+                          : 'text-white/80 hover:secondary-50/10 hover:text-white'
                       }`}
                     >
                       <Icon className="w-4 h-4" />
-                      {item.label}
+                      <span className="truncate">{item.label}</span>
+                      {renderNotificationMarker(item.href, active)}
                     </Link>
                   );
                 })}
@@ -169,18 +229,18 @@ export function AdminShell({ children, user }: AdminShellProps) {
       {mobileOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/50" onClick={() => setMobileOpen(false)} />
-          <div className="absolute left-0 top-0 h-full w-72 bg-green text-white overflow-y-auto">
+          <div className="absolute left-0 top-0 h-full w-72 bg-green-500 text-white overflow-y-auto">
             <div className="p-4 border-b border-white/10 flex items-center justify-between">
               <Link href="/" className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-yellow flex items-center justify-center">
-                  <Heart className="w-4 h-4 text-green" fill="currentColor" />
+                <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
+                  <Heart className="w-4 h-4 text-green-500" fill="currentColor" />
                 </div>
                 <div>
                   <span className="font-display font-bold text-sm block">Loving Family</span>
-                  <span className="text-[9px] uppercase tracking-wider text-yellow block">Admin Portal</span>
+                  <span className="text-[9px] uppercase tracking-wider text-secondary block">Admin Portal</span>
                 </div>
               </Link>
-              <button onClick={() => setMobileOpen(false)} className="p-1 rounded hover:yellow-50/10">
+              <button onClick={() => setMobileOpen(false)} className="p-1 rounded hover:secondary-50/10">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -198,13 +258,17 @@ export function AdminShell({ children, user }: AdminShellProps) {
                         <Link
                           key={item.href}
                           href={item.href}
-                          onClick={() => setMobileOpen(false)}
+                          onClick={() => {
+                            markSectionRead(item.href);
+                            setMobileOpen(false);
+                          }}
                           className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                            active ? 'bg-yellow text-green' : 'text-white/80 hover:yellow-50/10'
+                            active ? 'bg-secondary text-green-500' : 'text-white/80 hover:secondary-50/10'
                           }`}
                         >
                           <Icon className="w-4 h-4" />
-                          {item.label}
+                          <span className="truncate">{item.label}</span>
+                          {renderNotificationMarker(item.href, active)}
                         </Link>
                       );
                     })}
@@ -219,7 +283,7 @@ export function AdminShell({ children, user }: AdminShellProps) {
       {/* Main Content */}
       <div className="flex-1 lg:ml-72">
         {/* Top Header */}
-        <header className="sticky top-0 z-40 yellow-50 border-b border-border px-4 py-3 flex items-center justify-between">
+        <header className="sticky top-0 z-40 secondary-50 border-b border-border px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
               className="lg:hidden p-2 rounded-lg hover:bg-muted"
@@ -236,7 +300,9 @@ export function AdminShell({ children, user }: AdminShellProps) {
           <div className="flex items-center gap-3">
             <button className="relative p-2 rounded-lg hover:bg-muted">
               <Bell className="w-5 h-5 text-muted-foreground" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full" />
+              {totalUnread > 0 && (
+                <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-destructive" />
+              )}
             </button>
             <div className="flex items-center gap-2">
               <Avatar className="w-8 h-8">

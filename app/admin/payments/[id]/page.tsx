@@ -36,7 +36,7 @@ export default function PaymentDetailPage() {
       <Card>
         <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="font-display text-2xl font-bold text-green">{money(payment.amount, payment.currency)}</p>
+            <p className="font-display text-2xl font-bold text-green-500">{money(payment.amount, payment.currency)}</p>
             <p className="text-sm text-muted-foreground">{payment.description}</p>
           </div>
           <StatusBadge status={payment.status} />

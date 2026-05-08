@@ -83,20 +83,20 @@ export default function Analytics() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-display font-bold text-green lg:text-2xl">Analytics & Reports</h1>
+        <h1 className="text-xl font-display font-bold text-green-500 lg:text-2xl">Analytics & Reports</h1>
         <p className="text-sm text-muted-foreground">Live enrollment, payment, and attendance insights from backend data.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="shadow-soft"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Total Children</p><p className="text-2xl font-bold text-green">{children.length}</p><p className="text-xs text-muted-foreground">Active database records</p></CardContent></Card>
-        <Card className="shadow-soft"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Revenue (YTD)</p><p className="text-2xl font-bold text-green">{money(revenueYtd)}</p><p className="text-xs text-muted-foreground">Succeeded payments</p></CardContent></Card>
-        <Card className="shadow-soft"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Approved Enrollments</p><p className="text-2xl font-bold text-green">{approvedRegistrations}</p><p className="text-xs text-muted-foreground">From registrations API</p></CardContent></Card>
-        <Card className="shadow-soft"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Avg Attendance</p><p className="text-2xl font-bold text-green">{attendanceRate}%</p><p className="text-xs text-muted-foreground">{attendance.length} records</p></CardContent></Card>
+        <Card className="shadow-soft"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Total Children</p><p className="text-2xl font-bold text-green-500">{children.length}</p><p className="text-xs text-muted-foreground">Active database records</p></CardContent></Card>
+        <Card className="shadow-soft"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Revenue (YTD)</p><p className="text-2xl font-bold text-green-500">{money(revenueYtd)}</p><p className="text-xs text-muted-foreground">Succeeded payments</p></CardContent></Card>
+        <Card className="shadow-soft"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Approved Enrollments</p><p className="text-2xl font-bold text-green-500">{approvedRegistrations}</p><p className="text-xs text-muted-foreground">From registrations API</p></CardContent></Card>
+        <Card className="shadow-soft"><CardContent className="p-4"><p className="text-xs text-muted-foreground">Avg Attendance</p><p className="text-2xl font-bold text-green-500">{attendanceRate}%</p><p className="text-xs text-muted-foreground">{attendance.length} records</p></CardContent></Card>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="shadow-soft">
-          <CardHeader className="pb-2"><CardTitle className="text-base font-display text-green">Monthly Revenue</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle className="text-base font-display text-green-500">Monthly Revenue</CardTitle></CardHeader>
           <CardContent>
             <div className="h-[250px] w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -112,7 +112,7 @@ export default function Analytics() {
           </CardContent>
         </Card>
         <Card className="shadow-soft">
-          <CardHeader className="pb-2"><CardTitle className="text-base font-display text-green">New Enrollments</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle className="text-base font-display text-green-500">New Enrollments</CardTitle></CardHeader>
           <CardContent>
             <div className="h-[250px] w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -131,7 +131,7 @@ export default function Analytics() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="shadow-soft">
-          <CardHeader className="pb-2"><CardTitle className="text-base font-display text-green">Enrollment by Program</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle className="text-base font-display text-green-500">Enrollment by Program</CardTitle></CardHeader>
           <CardContent>
             <div className="h-[220px] w-full">
               <ResponsiveContainer width="100%" height="100%">
@@ -146,7 +146,7 @@ export default function Analytics() {
           </CardContent>
         </Card>
         <Card className="shadow-soft">
-          <CardHeader className="pb-2"><CardTitle className="text-base font-display text-green">Gender Distribution</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle className="text-base font-display text-green-500">Gender Distribution</CardTitle></CardHeader>
           <CardContent>
             <div className="h-[220px] w-full">
               <ResponsiveContainer width="100%" height="100%">

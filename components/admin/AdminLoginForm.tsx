@@ -144,7 +144,7 @@ export function AdminLoginForm() {
   if (userLoaded && isSignedIn && !isCurrentSessionAdmin) {
     return (
       <div className="space-y-4">
-        <div className="rounded-lg border border-warning/30 bg-warning/10 px-3 py-2 text-sm text-green">
+        <div className="rounded-lg border border-warning/30 bg-warning/10 px-3 py-2 text-sm text-green-500">
           A non-admin session is already active for {user?.primaryEmailAddress?.emailAddress ?? "this browser"}.
           Sign out first, then log in with the promoted admin account.
         </div>

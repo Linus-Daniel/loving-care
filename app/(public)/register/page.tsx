@@ -114,18 +114,18 @@ export default function Registration() {
     <div className="min-h-screen bg-muted py-8 px-4">
       <div className="mx-auto max-w-3xl">
         <div className="mb-8 text-center">
-          <h1 className="text-2xl lg:text-3xl font-display font-bold text-green">Enroll Your Child</h1>
+          <h1 className="text-2xl lg:text-3xl font-display font-bold text-green-500">Enroll Your Child</h1>
           <p className="text-sm text-muted-foreground">Complete the registration form and our admissions team will follow up.</p>
         </div>
 
-        <div className="mb-8 rounded-2xl yellow-50 p-4 shadow-card">
+        <div className="mb-8 rounded-2xl secondary-50 p-4 shadow-card">
           <FormStepper steps={steps} currentStep={step} />
         </div>
 
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="rounded-2xl yellow-50 p-6 shadow-card lg:p-8">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="rounded-2xl secondary-50 p-6 shadow-card lg:p-8">
           {step === 0 ? (
             <div className="space-y-5">
-              <h2 className="text-lg font-display font-semibold text-green">Personal Information</h2>
+              <h2 className="text-lg font-display font-semibold text-green-500">Personal Information</h2>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label>Child&apos;s First Name</Label>
@@ -174,7 +174,7 @@ export default function Registration() {
 
           {step === 1 ? (
             <div className="space-y-5">
-              <h2 className="text-lg font-display font-semibold text-green">Address & Emergency Contact</h2>
+              <h2 className="text-lg font-display font-semibold text-green-500">Address & Emergency Contact</h2>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2 sm:col-span-2">
                   <Label>Street Address</Label>
@@ -219,7 +219,7 @@ export default function Registration() {
 
           {step === 2 ? (
             <div className="space-y-5">
-              <h2 className="text-lg font-display font-semibold text-green">Medical & Educational Information</h2>
+              <h2 className="text-lg font-display font-semibold text-green-500">Medical & Educational Information</h2>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2 sm:col-span-2">
                   <Label>Program Applying For</Label>
@@ -266,7 +266,7 @@ export default function Registration() {
 
           {step === 3 ? (
             <div className="space-y-5">
-              <h2 className="text-lg font-display font-semibold text-green">Consent</h2>
+              <h2 className="text-lg font-display font-semibold text-green-500">Consent</h2>
               {([
                 ["termsAccepted", "I have read and accepted the Terms of Service."],
                 ["privacyAccepted", "I have read and accepted the Privacy Policy."],
@@ -293,9 +293,9 @@ export default function Registration() {
 
           {step === 4 ? (
             <div className="space-y-5">
-              <h2 className="text-lg font-display font-semibold text-green">Payment Method</h2>
-              <div className="rounded-xl border border-yellow bg-yellow/10 p-4">
-                <p className="font-medium text-green">Registration fee: NGN 20,000</p>
+              <h2 className="text-lg font-display font-semibold text-green-500">Payment Method</h2>
+              <div className="rounded-xl border border-secondary bg-secondary/10 p-4">
+                <p className="font-medium text-green-500">Registration fee: NGN 20,000</p>
                 <p className="text-sm text-muted-foreground">You will receive payment instructions after submission. Card payments are completed after admissions review.</p>
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
@@ -310,10 +310,10 @@ export default function Registration() {
                       key={method.value}
                       type="button"
                       onClick={() => form.setValue("paymentMethod", method.value as RegistrationFormValues["paymentMethod"], { shouldValidate: true })}
-                      className={`rounded-xl border-2 p-4 text-left transition-colors ${selected ? "border-green bg-green/5" : "border-border hover:border-green"}`}
+                      className={`rounded-xl border-2 p-4 text-left transition-colors ${selected ? "border-green-500 bg-green-500/5" : "border-border hover:border-green-500"}`}
                     >
-                      <Icon className="mb-3 h-5 w-5 text-green" />
-                      <p className="font-medium text-green">{method.title}</p>
+                      <Icon className="mb-3 h-5 w-5 text-green-500" />
+                      <p className="font-medium text-green-500">{method.title}</p>
                       <p className="text-xs text-muted-foreground">Selected during admissions processing</p>
                     </button>
                   );
@@ -329,7 +329,7 @@ export default function Registration() {
 
           {step === 5 ? (
             <div className="space-y-5">
-              <h2 className="text-lg font-display font-semibold text-green">Review Registration</h2>
+              <h2 className="text-lg font-display font-semibold text-green-500">Review Registration</h2>
               <div className="grid gap-4 sm:grid-cols-2">
                 {[
                   ["Child", `${values.childFirstName} ${values.childLastName}`],
@@ -344,7 +344,7 @@ export default function Registration() {
                 ].map(([label, value]) => (
                   <div key={label} className="rounded-lg border bg-background p-3">
                     <p className="text-xs uppercase text-muted-foreground">{label}</p>
-                    <p className="font-medium text-green">{value || "Not provided"}</p>
+                    <p className="font-medium text-green-500">{value || "Not provided"}</p>
                   </div>
                 ))}
               </div>
@@ -356,11 +356,11 @@ export default function Registration() {
               <ArrowLeft className="h-4 w-4" /> Back
             </Button>
             {step < steps.length - 1 ? (
-              <Button type="button" onClick={handleNext} className="gap-2 bg-green text-white hover:bg-green/90">
+              <Button type="button" onClick={handleNext} className="gap-2 bg-accent text-accent-foreground hover:bg-accent-400">
                 Next <ArrowRight className="h-4 w-4" />
               </Button>
             ) : (
-              <Button type="submit" className="gap-2 bg-yellow font-semibold text-green hover:bg-yellow/90" disabled={isSubmitting}>
+              <Button type="submit" className="gap-2 bg-accent font-semibold text-accent-foreground hover:bg-accent-400" disabled={isSubmitting}>
                 {isSubmitting ? "Submitting..." : "Submit Registration"} <CheckCircle className="h-4 w-4" />
               </Button>
             )}

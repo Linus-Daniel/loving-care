@@ -11,6 +11,32 @@ import { Input } from "@/components/ui/input";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { usePublicFaq } from "@/hooks/usePublicContent";
 
+function PulseBlock({ className = "" }: { className?: string }) {
+  return <div className={`animate-pulse rounded bg-muted ${className}`} />;
+}
+
+function FaqSkeleton() {
+  return (
+    <div className="space-y-8">
+      {Array.from({ length: 3 }).map((_, categoryIndex) => (
+        <div key={categoryIndex}>
+          <PulseBlock className="mb-4 h-6 w-40" />
+          <div className="space-y-2">
+            {Array.from({ length: 3 }).map((__, itemIndex) => (
+              <div key={itemIndex} className="secondary-50 rounded-lg px-4 py-4 shadow-soft">
+                <div className="flex items-center justify-between gap-4">
+                  <PulseBlock className="h-4 w-4/5" />
+                  <PulseBlock className="h-4 w-4 shrink-0 rounded-full" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function FAQ() {
   const [search, setSearch] = useState("");
   const router = useRouter();
@@ -34,9 +60,9 @@ export default function FAQ() {
 
   return (
     <div>
-      <div className="bg-green py-12 lg:py-20">
+      <div className="bg-green-500 py-12 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <Badge className="bg-yellow/20 text-yellow border-yellow/30 mb-4">FAQ</Badge>
+          <Badge className="bg-secondary/20 text-secondary border-secondary/30 mb-4">FAQ</Badge>
           <h1 className="text-3xl lg:text-5xl font-display font-bold text-white mb-3">Frequently Asked Questions</h1>
           <p className="text-white/70 max-w-2xl mx-auto">Find answers from the school FAQ content managed in Sanity.</p>
         </div>
@@ -54,19 +80,15 @@ export default function FAQ() {
         </div>
 
         {isLoading ? (
-          <div className="space-y-4">
-            {Array.from({ length: 6 }).map((_, index) => (
-              <div key={index} className="h-16 animate-pulse rounded-lg bg-muted" />
-            ))}
-          </div>
+          <FaqSkeleton />
         ) : categories.length ? (
           <div className="space-y-8">
             {categories.map(([category, items]) => (
               <div key={category}>
-                <h2 className="text-lg font-display font-semibold text-green mb-4">{category}</h2>
+                <h2 className="text-lg font-display font-semibold text-green-500 mb-4">{category}</h2>
                 <Accordion type="single" collapsible className="space-y-2">
                   {items.map((item) => (
-                    <AccordionItem key={item._id} value={item._id} className="yellow-50 rounded-lg px-4 shadow-soft border-none">
+                    <AccordionItem key={item._id} value={item._id} className="secondary-50 rounded-lg px-4 shadow-soft border-none">
                       <AccordionTrigger className="text-left text-sm font-medium hover:no-underline py-4">
                         {item.question}
                       </AccordionTrigger>
@@ -88,10 +110,10 @@ export default function FAQ() {
         )}
 
         <div className="mt-12 bg-teal rounded-xl p-8 text-white text-center">
-          <MessageCircle className="w-10 h-10 mx-auto mb-3 text-yellow" />
+          <MessageCircle className="w-10 h-10 mx-auto mb-3 text-secondary" />
           <h3 className="text-xl font-display font-bold mb-2">Still Have Questions?</h3>
           <p className="text-white/80 text-sm mb-4">Our team is happy to help with any other inquiries you may have.</p>
-          <Button className="bg-yellow text-green hover:bg-yellow-400 font-semibold" onClick={() => router.push("/contact")}>
+          <Button className="bg-accent text-accent-foreground hover:bg-accent-400 font-semibold" onClick={() => router.push("/contact")}>
             Contact Us
           </Button>
         </div>

@@ -30,7 +30,7 @@ export default function Payments() {
         title="Payment History"
         description="View and manage your payment records"
         action={
-          <Button className="bg-yellow font-semibold text-green hover:bg-yellow-400" onClick={() => router.push("/parent/payments/pay")}>
+          <Button className="bg-secondary font-semibold text-green-500 hover:bg-secondary-400" onClick={() => router.push("/parent/payments/pay")}>
             <CreditCard className="mr-2 h-4 w-4" />
             Make Payment
           </Button>
@@ -41,7 +41,7 @@ export default function Payments() {
         <Card className="shadow-card">
           <CardContent className="p-4">
             <p className="mb-1 text-xs text-muted-foreground">Total Paid ({new Date().getFullYear()})</p>
-            <p className="text-2xl font-bold text-green">{money(totalPaid, "NGN")}</p>
+            <p className="text-2xl font-bold text-green-500">{money(totalPaid, "NGN")}</p>
           </CardContent>
         </Card>
         <Card className="shadow-card">
@@ -60,7 +60,7 @@ export default function Payments() {
 
       <Card className="shadow-card">
         <CardHeader className="pb-3">
-          <CardTitle className="font-display text-base text-green">Transactions</CardTitle>
+          <CardTitle className="font-display text-base text-green-500">Transactions</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (

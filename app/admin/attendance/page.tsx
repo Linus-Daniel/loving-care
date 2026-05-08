@@ -32,14 +32,20 @@ function today() {
 export default function AdminAttendancePage() {
   const [date, setDate] = useState(today());
   const [program, setProgram] = useState("all");
-  const [localAttendance, setLocalAttendance] = useState<Record<string, AttendanceRecord["status"]>>({});
-  const { data: children = [], isLoading } = useChildren({ program: program === "all" ? undefined : program });
+  const { data: children = [], isLoading: childrenLoading } = useChildren({ program: program === "all" ? undefined : program });
+  const { data: attendanceRecords = [], isLoading: attendanceLoading } = useAttendance({ from: date, to: date });
   const markAttendance = useMarkAttendance();
+
+  const attendanceMap = useMemo(() => {
+    return attendanceRecords.reduce((acc, record) => {
+      acc[record.childId] = record.status;
+      return acc;
+    }, {} as Record<string, AttendanceRecord["status"]>);
+  }, [attendanceRecords]);
 
   const programs = useMemo(() => Array.from(new Set(children.map((child) => child.program))).filter(Boolean), [children]);
 
   const setStatus = (childId: string, status: AttendanceRecord["status"]) => {
-    setLocalAttendance((current) => ({ ...current, [childId]: status }));
     markAttendance.mutate(
       { childId, date, status },
       {
@@ -50,7 +56,11 @@ export default function AdminAttendancePage() {
   };
 
   const markAllPresent = () => {
-    children.forEach((child) => setStatus(child.id, "PRESENT"));
+    children.forEach((child) => {
+      if (attendanceMap[child.id] !== "PRESENT") {
+        setStatus(child.id, "PRESENT");
+      }
+    });
   };
 
   return (
@@ -60,7 +70,7 @@ export default function AdminAttendancePage() {
       <Card>
         <CardContent className="flex flex-col gap-3 p-4 lg:flex-row lg:items-center">
           <div className="flex items-center gap-2 rounded-lg bg-muted px-3 py-2">
-            <CalendarDays className="h-4 w-4 text-green" />
+            <CalendarDays className="h-4 w-4 text-green-500" />
             <Input type="date" value={date} onChange={(event) => setDate(event.target.value)} className="h-auto border-none bg-transparent p-0" />
           </div>
           <Select value={program} onValueChange={setProgram}>
@@ -76,11 +86,25 @@ export default function AdminAttendancePage() {
               ))}
             </SelectContent>
           </Select>
-          <Button variant="outline" className="lg:ml-auto" onClick={markAllPresent} disabled={children.length === 0 || markAttendance.isPending}>
+          <Button 
+            variant="outline" 
+            className="lg:ml-auto" 
+            onClick={markAllPresent} 
+            disabled={
+              children.length === 0 || 
+              markAttendance.isPending || 
+              children.every(child => attendanceMap[child.id] === "PRESENT")
+            }
+          >
             <CheckCircle className="mr-2 h-4 w-4" />
             Mark All Present
           </Button>
-          <StatusBadge status={markAttendance.isPending ? "IN_PROGRESS" : "SAVED"} />
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">
+              {markAttendance.isPending ? "Saving..." : "All changes saved"}
+            </span>
+            <StatusBadge status={markAttendance.isPending ? "IN_PROGRESS" : "SAVED"} />
+          </div>
         </CardContent>
       </Card>
 
@@ -96,10 +120,10 @@ export default function AdminAttendancePage() {
                 </tr>
               </thead>
               <tbody>
-                {isLoading ? (
+                {childrenLoading || attendanceLoading ? (
                   <tr>
                     <td colSpan={3} className="p-6 text-center text-muted-foreground">
-                      Loading children...
+                      Loading attendance data...
                     </td>
                   </tr>
                 ) : children.length === 0 ? (
@@ -110,9 +134,9 @@ export default function AdminAttendancePage() {
                   </tr>
                 ) : (
                   children.map((child) => {
-                    const selected = localAttendance[child.id];
+                    const currentStatus = attendanceMap[child.id];
                     return (
-                      <tr key={child.id} className="border-b last:border-0">
+                      <tr key={child.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
                             <Avatar className="h-9 w-9">
@@ -120,28 +144,30 @@ export default function AdminAttendancePage() {
                               <AvatarFallback>{child.firstName.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div>
-                              <p className="font-medium">{child.firstName} {child.lastName}</p>
+                              <p className="font-medium text-green-500">{child.firstName} {child.lastName}</p>
                               <p className="text-xs text-muted-foreground">{child.parent?.name ?? "No parent linked"}</p>
                             </div>
                           </div>
                         </td>
-                        <td className="px-4 py-3">{child.program}</td>
+                        <td className="px-4 py-3 font-medium text-muted-foreground">{child.program}</td>
                         <td className="px-4 py-3">
                           <div className="flex flex-wrap gap-2">
                             {statusOptions.map((option) => {
                               const Icon = option.icon;
+                              const isSelected = currentStatus === option.value;
                               return (
                                 <Button
                                   key={option.value}
                                   size="sm"
-                                  variant={selected === option.value ? "default" : "outline"}
+                                  variant={isSelected ? "default" : "outline"}
                                   onClick={() => setStatus(child.id, option.value)}
-                                  disabled={markAttendance.isPending}
+                                  disabled={markAttendance.isPending || isSelected}
+                                  className={isSelected ? "bg-green-500 text-white opacity-50 cursor-not-allowed" : ""}
                                 >
                                   <Icon className="mr-1 h-3 w-3" />
                                   {option.label}
                                 </Button>
-                              );
+                                );
                             })}
                           </div>
                         </td>

@@ -1,98 +1,123 @@
 "use client";
 
-import Link from 'next/link';
-import { Heart, Facebook, Instagram, Twitter, Mail, Phone, MapPin, ArrowRight } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { motion } from "framer-motion";
+import Link from "next/link";
+import {
+  ArrowRight,
+  Facebook,
+  Heart,
+  Instagram,
+  Mail,
+  MapPin,
+  Phone,
+  Sparkles,
+  Twitter,
+} from "lucide-react";
+
+const links = ["Programs", "Gallery", "Events", "About Us", "Contact"];
 
 export default function PublicFooter() {
   return (
-    <footer className="bg-green text-white pt-16 pb-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-4 gap-12 mb-12">
-          {/* Brand Column */}
-          <div className="lg:col-span-1 space-y-6">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-yellow flex items-center justify-center">
-                <Heart className="w-5 h-5 text-green" fill="currentColor" />
+    <footer className="relative overflow-hidden border-t border-border bg-background text-primary">
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-secondary-50 to-accent-50" />
+      <div className="absolute inset-0 bg-primary/5" />
+      <div className="absolute -left-24 -top-24 h-64 w-80 rounded-[45%_55%_62%_38%/48%_42%_58%_52%] bg-surface/70" />
+      <div className="absolute -right-28 bottom-0 h-72 w-96 rounded-[58%_42%_45%_55%/42%_48%_52%_58%] bg-secondary/70" />
+
+      <section className="relative py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-10 lg:grid-cols-[1.35fr_0.75fr_0.9fr]">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="max-w-xl"
+            >
+              <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-border bg-background/80 px-4 py-2 text-sm font-bold shadow-sm backdrop-blur-sm">
+                <Sparkles className="h-4 w-4 text-accent" />
+                Loving care since 2015
               </div>
-              <span className="font-display font-bold text-2xl tracking-tight">Loving Family</span>
-            </Link>
-            <p className="text-white/60 text-sm leading-relaxed">
-              Providing a nurturing, safe, and stimulating environment for children to learn and grow since 2015. Our mission is to build bright futures together.
-            </p>
-            <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 rounded-full yellow-50/5 flex items-center justify-center hover:bg-yellow hover:text-green transition-all">
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full yellow-50/5 flex items-center justify-center hover:bg-yellow hover:text-green transition-all">
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full yellow-50/5 flex items-center justify-center hover:bg-yellow hover:text-green transition-all">
-                <Twitter className="w-5 h-5" />
-              </a>
-            </div>
-          </div>
+              <h3 className="mb-4 flex items-center gap-3 font-display text-3xl font-bold text-[#2C4D63]">
+                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-accent text-primary-900 shadow-sm">
+                  <Heart className="h-6 w-6 fill-current" />
+                </span>
+                Loving Family Daycare
+              </h3>
+              <p className="max-w-md leading-relaxed text-muted-foreground">
+                A warm second home where children feel safe, loved, and inspired to grow every day.
+              </p>
 
-          {/* Quick Links */}
-          <div>
-            <h4 className="font-display font-bold text-lg mb-6">Quick Links</h4>
-            <ul className="space-y-4">
-              <li><Link href="/about" className="text-white/60 hover:text-yellow transition-colors text-sm">About Us</Link></li>
-              <li><Link href="/programs" className="text-white/60 hover:text-yellow transition-colors text-sm">Our Programs</Link></li>
-              <li><Link href="/gallery" className="text-white/60 hover:text-yellow transition-colors text-sm">Photo Gallery</Link></li>
-              <li><Link href="/events" className="text-white/60 hover:text-yellow transition-colors text-sm">Upcoming Events</Link></li>
-              <li><Link href="/contact" className="text-white/60 hover:text-yellow transition-colors text-sm">Contact Us</Link></li>
-            </ul>
-          </div>
-
-          {/* Contact Info */}
-          <div>
-            <h4 className="font-display font-bold text-lg mb-6">Contact Info</h4>
-            <ul className="space-y-4">
-              <li className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-yellow shrink-0" />
-                <span className="text-white/60 text-sm">12 Unity Avenue, Ikeja, Lagos, Nigeria</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-yellow shrink-0" />
-                <span className="text-white/60 text-sm">+234 801 234 5678</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-yellow shrink-0" />
-                <span className="text-white/60 text-sm">info@lovingfamily.ng</span>
-              </li>
-            </ul>
-          </div>
-
-          {/* Newsletter */}
-          <div>
-            <h4 className="font-display font-bold text-lg mb-6">Newsletter</h4>
-            <p className="text-white/60 text-sm mb-4">Subscribe to get the latest news and event updates.</p>
-            <form className="space-y-3">
-              <div className="relative">
-                <Input 
-                  placeholder="Your Email" 
-                  className="yellow-50/5 border-white/10 text-white placeholder:text-white/40 rounded-full pr-12 h-12"
-                />
-                <button className="absolute right-1 top-1 w-10 h-10 bg-yellow rounded-full flex items-center justify-center text-green hover:bg-yellow-400 transition-colors">
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+              <div className="mt-6 flex items-center gap-3">
+                {[Facebook, Instagram, Twitter].map((Icon, index) => (
+                  <Link
+                    key={index}
+                    href="#"
+                    className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-primary shadow-sm transition-colors hover:bg-accent hover:text-primary-900"
+                    aria-label="Social media link"
+                  >
+                    <Icon className="h-5 w-5" />
+                  </Link>
+                ))}
               </div>
-            </form>
-          </div>
-        </div>
+            </motion.div>
 
-        {/* Bottom Bar */}
-        <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-white/40 text-xs text-center md:text-left">
-            &copy; {new Date().getFullYear()} Loving Family Daycare. All rights reserved.
-          </p>
-          <div className="flex gap-6">
-            <Link href="/privacy" className="text-white/40 hover:text-white transition-colors text-xs">Privacy Policy</Link>
-            <Link href="/terms" className="text-white/40 hover:text-white transition-colors text-xs">Terms of Service</Link>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+            >
+              <h4 className="mb-4 font-display text-lg font-bold text-accent">Quick Links</h4>
+              <ul className="space-y-2">
+                {links.map((link) => (
+                  <li key={link}>
+                    <Link
+                      href={`/${link.toLowerCase().replace(" ", "-")}`}
+                      className="group flex items-center gap-2 rounded-full px-1 py-1 text-sm font-semibold text-muted-foreground transition-colors hover:text-primary"
+                    >
+                      <ArrowRight className="h-3.5 w-3.5 text-accent transition-transform group-hover:translate-x-1" />
+                      {link}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="rounded-3xl border border-border bg-card/80 p-6 shadow-soft backdrop-blur-sm"
+            >
+              <h4 className="mb-4 font-display text-lg font-bold text-accent">Contact</h4>
+              <ul className="space-y-4 text-sm text-muted-foreground">
+                <li className="flex items-start gap-3">
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                  <span>12 Unity Avenue, Ikeja, Lagos, Nigeria</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Phone className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                  <span>+234 801 234 5678</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Mail className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                  <span>info@lovingfamily.ng</span>
+                </li>
+              </ul>
+            </motion.div>
           </div>
+
+          <motion.div
+            className="mt-12 border-t border-border pt-8 text-center text-sm text-muted-foreground"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+          >
+            © 2025 Loving Family Daycare. All rights reserved. Made with love for little ones.
+          </motion.div>
         </div>
-      </div>
+      </section>
     </footer>
   );
 }

@@ -1,4 +1,4 @@
-import { auth, clerkClient } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { AdminShell } from "@/components/admin/AdminShell";
@@ -23,35 +23,27 @@ export default async function AdminLayout({
     redirect(`/admin-login?redirect_url=${encodeURIComponent(currentPath)}`);
   }
 
-  // Fetch user role from Clerk or Prisma
-  const client = await clerkClient();
-  const user = await client.users.getUser(userId);
-  
-  // Check role from metadata or fallback to Prisma
-  let role = (user.publicMetadata?.role as string) || (user.unsafeMetadata?.role as string);
-  
-  if (!role) {
-    const dbUser = await prisma.user.findUnique({
-      where: { clerkId: userId },
-      select: { role: true },
-    });
-    role = dbUser?.role || "PARENT";
-  }
+  // Fetch user data from Prisma (synced via webhooks)
+  const dbUser = await prisma.user.findUnique({
+    where: { clerkId: userId },
+    select: { name: true, avatar: true, role: true },
+  });
 
-  const isAuthorized = ["ADMIN", "SUPER_ADMIN"].includes(role.toUpperCase());
+  const role = dbUser?.role || "PARENT";
+  const isAuthorized = ["ADMIN", "SUPER_ADMIN", "STAFF"].includes(role.toUpperCase());
 
   if (!isAuthorized) {
     redirect("/admin-login?error=unauthorized");
   }
 
   // Bypass shell for Studio
-  if (pathname.startsWith('/admin/studio')) {
+  if (pathname.startsWith("/admin/studio")) {
     return <>{children}</>;
   }
 
   const shellUser = {
-    fullName: user.fullName || `${user.firstName} ${user.lastName}`.trim() || user.primaryEmailAddress?.emailAddress || "Admin",
-    imageUrl: user.imageUrl,
+    fullName: dbUser?.name ?? "Admin",
+    imageUrl: dbUser?.avatar ?? null,
     role: role,
   };
 

@@ -65,7 +65,7 @@ export default function AdminEvents() {
         action={
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-yellow font-semibold text-green hover:bg-yellow-400">
+              <Button className="bg-secondary font-semibold text-green-500 hover:bg-secondary-400">
                 <Plus className="mr-2 h-4 w-4" />
                 Create Event
               </Button>
@@ -81,7 +81,7 @@ export default function AdminEvents() {
                 <div className="space-y-2"><Label>Location</Label><Input value={form.location} onChange={(event) => setForm({ ...form, location: event.target.value })} /></div>
                 <div className="space-y-2"><Label>Capacity</Label><Input type="number" value={form.capacity} onChange={(event) => setForm({ ...form, capacity: event.target.value })} /></div>
                 <div className="space-y-2"><Label>Description</Label><Textarea value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} /></div>
-                <Button className="w-full bg-green text-white" disabled={createEvent.isPending || !form.title || !form.date || !form.description} onClick={submit}>
+                <Button className="w-full bg-green-500 text-white" disabled={createEvent.isPending || !form.title || !form.date || !form.description} onClick={submit}>
                   {createEvent.isPending ? "Creating..." : "Create Event"}
                 </Button>
               </div>
@@ -105,7 +105,7 @@ export default function AdminEvents() {
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 </div>
-                <h3 className="mb-2 font-display font-semibold text-green">{event.title}</h3>
+                <h3 className="mb-2 font-display font-semibold text-green-500">{event.title}</h3>
                 <p className="mb-3 line-clamp-2 text-sm text-muted-foreground">{event.description}</p>
                 <div className="mb-3 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1"><Calendar className="h-3 w-3" />{new Date(event.date).toLocaleDateString("en-NG")}</span>

@@ -11,9 +11,9 @@ export const metadata: Metadata = {
 const clerkAppearance = {
   elements: {
     cardBox: "shadow-card rounded-2xl",
-    formButtonPrimary: "bg-green hover:bg-green-600 text-white",
+    formButtonPrimary: "bg-green-500 hover:bg-green-500-600 text-white",
     footerActionLink: "text-teal hover:text-teal-700",
-    headerTitle: "font-display text-green",
+    headerTitle: "font-display text-green-500",
   },
 };
 
@@ -23,10 +23,10 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="mb-6 text-center">
           <Link href="/" className="inline-flex items-center gap-2">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-green">
-              <Heart className="h-5 w-5 text-yellow" fill="currentColor" />
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-green-500">
+              <Heart className="h-5 w-5 text-secondary" fill="currentColor" />
             </span>
-            <span className="font-display text-lg font-bold text-green">Loving Family Daycare</span>
+            <span className="font-display text-lg font-bold text-green-500">Loving Family Daycare</span>
           </Link>
         </div>
         <SignIn
