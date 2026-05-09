@@ -15,11 +15,45 @@ export async function POST(request: Request, { params }: Params) {
 
     const event = await sanityClient.fetch(`*[_type == "event" && _id == $id][0]{
       _id,
+      title,
+      description,
+      date,
+      time,
+      location,
       capacity,
-      "registrationsCount": count(*[_type == "eventRegistration" && eventId == $id])
+      visibility,
+      status,
+      "coverPhoto": image.asset->url
     }`, { id });
 
     if (!event) return apiError("Event not found", 404);
+
+    await prisma.event.upsert({
+      where: { id },
+      update: {
+        title: event.title ?? "Untitled event",
+        description: event.description ?? "",
+        date: new Date(event.date),
+        time: event.time ?? null,
+        location: event.location ?? null,
+        capacity: event.capacity ?? null,
+        coverPhoto: event.coverPhoto ?? null,
+        visibility: event.visibility ?? "public",
+        status: event.status ?? "scheduled",
+      },
+      create: {
+        id,
+        title: event.title ?? "Untitled event",
+        description: event.description ?? "",
+        date: new Date(event.date),
+        time: event.time ?? null,
+        location: event.location ?? null,
+        capacity: event.capacity ?? null,
+        coverPhoto: event.coverPhoto ?? null,
+        visibility: event.visibility ?? "public",
+        status: event.status ?? "scheduled",
+      },
+    });
     
     // We also need to check registrations from Prisma to enforce capacity correctly
     const registrations = await prisma.eventRegistration.findMany({ where: { eventId: id } });

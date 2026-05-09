@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { updateClerkProfileName } from "@/lib/clerk";
 import { apiError, apiResponse, handleRouteError, parseJson, requireSession } from "@/lib/server/api";
 import { parentPatchSchema } from "@/lib/validations/api";
 
@@ -27,6 +28,10 @@ export async function PATCH(request: Request) {
   try {
     const session = await requireSession(["PARENT", "ADMIN", "SUPER_ADMIN", "STAFF"]);
     const data = await parseJson(request, parentPatchSchema.omit({ role: true }));
+
+    if (data.name) {
+      await updateClerkProfileName(session.clerkId, data.name);
+    }
 
     const user = await prisma.user.update({
       where: { clerkId: session.clerkId },

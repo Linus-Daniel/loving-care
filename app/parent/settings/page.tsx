@@ -65,6 +65,7 @@ export default function Settings() {
         phone: profile.phone || null,
         avatar: avatarUrl || currentUser?.avatar || null,
       });
+      await user?.reload();
       toast.success("Profile updated");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not update profile");
@@ -82,6 +83,12 @@ export default function Settings() {
     URL.revokeObjectURL(url);
   };
 
+  const tabs = [
+    { name: "Profile", value: "profile", icon: User },
+    { name: "Security", value: "security", icon: Lock },
+    { name: "Notifications", value: "notifications", icon: Bell },
+    { name: "Privacy", value: "privacy", icon: Shield },
+  ];
   return (
     <div className="mx-auto max-w-7xl space-y-6">
       <section className="overflow-hidden rounded-[2rem] border border-primary/10 bg-white shadow-card">
@@ -112,20 +119,20 @@ export default function Settings() {
       </section>
 
       <Tabs defaultValue="profile" className="space-y-6">
-        <TabsList className="h-auto flex-wrap rounded-2xl bg-secondary-50 p-1">
-          <TabsTrigger value="profile" className="rounded-xl">
-            <User className="h-3.5 w-3.5" /> Profile
-          </TabsTrigger>
-          <TabsTrigger value="security" className="rounded-xl">
-            <Lock className="h-3.5 w-3.5" /> Security
-          </TabsTrigger>
-          <TabsTrigger value="notifications" className="rounded-xl">
-            <Bell className="h-3.5 w-3.5" /> Notifications
-          </TabsTrigger>
-          <TabsTrigger value="privacy" className="rounded-xl">
-            <Shield className="h-3.5 w-3.5" /> Privacy
-          </TabsTrigger>
-        </TabsList>
+
+     
+  <TabsList className="h-auto flex-wrap rounded-2xl bg-secondary-50 p-1">
+    {tabs.map((item) => {
+      const Icon = item.icon;
+
+      return (
+        <TabsTrigger value={item.value} key={item.value} className="rounded-xl items-center px-2 gap-2">
+          <Icon className="h-4 w-4" />
+          {item.name}
+        </TabsTrigger>
+      );
+    })}
+  </TabsList>
 
         <TabsContent value="profile">
           <Card className="border-primary/10 bg-white shadow-card">
@@ -185,7 +192,7 @@ export default function Settings() {
                       <Input value={profile.phone} onChange={(event) => setProfile({ ...profile, phone: event.target.value })} />
                     </div>
                   </div>
-                  <Button className="bg-accent text-white hover:bg-accent-400" onClick={handleSaveProfile} disabled={updateProfile.isPending}>
+                  <Button className="bg-accent-500 text-white hover:bg-accent-400" onClick={handleSaveProfile} disabled={updateProfile.isPending}>
                     {updateProfile.isPending ? "Saving..." : "Save Changes"}
                   </Button>
                 </>
@@ -207,7 +214,7 @@ export default function Settings() {
                 </div>
                 <Switch checked={user?.totpEnabled ?? false} disabled />
               </div>
-              <Button className="bg-accent text-white hover:bg-accent-400" asChild>
+              <Button className="bg-accent-500 text-white hover:bg-accent-400" asChild>
                 <a href="/user-profile">Manage Security</a>
               </Button>
             </CardContent>
@@ -219,27 +226,27 @@ export default function Settings() {
             <CardHeader className="pb-3">
               <CardTitle className="font-display text-xl text-primary">Notification Preferences</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="bg-white space-y-4">
               {[
                 { label: "Payment Reminders", email: "emailPayments", inApp: "inAppPayments" },
                 { label: "Event Updates", email: "emailEvents", inApp: "inAppEvents" },
                 { label: "Message Alerts", email: "emailMessages", inApp: "inAppMessages" },
               ].map((item) => (
-                <div key={item.label} className="grid gap-4 rounded-3xl bg-[#FFF9F0] p-4 sm:grid-cols-[1fr_auto] sm:items-center">
+                <div key={item.label} className="grid gap-4 rounded-3xl bg-accent-100/30 p-4 sm:grid-cols-[1fr_auto] sm:items-center">
                   <p className="font-bold text-primary">{item.label}</p>
                   <div className="flex flex-wrap gap-4">
                     <div className="flex items-center gap-2">
-                      <Switch checked={notifications[item.email as keyof typeof notifications]} onCheckedChange={() => toggleNotif(item.email as keyof typeof notifications)} />
+                      <Switch className="bg-primary-50" checked={notifications[item.email as keyof typeof notifications]} onCheckedChange={() => toggleNotif(item.email as keyof typeof notifications)} />
                       <span className="text-sm text-muted-foreground">Email</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Switch checked={notifications[item.inApp as keyof typeof notifications]} onCheckedChange={() => toggleNotif(item.inApp as keyof typeof notifications)} />
+                      <Switch className="bg-primary-50" checked={notifications[item.inApp as keyof typeof notifications]} onCheckedChange={() => toggleNotif(item.inApp as keyof typeof notifications)} />
                       <span className="text-sm text-muted-foreground">In-app</span>
                     </div>
                   </div>
                 </div>
               ))}
-              <Button className="bg-accent text-white hover:bg-accent-400" onClick={() => toast.success("Preferences saved")}>
+              <Button className="bg-accent-500 text-white hover:bg-accent-400" onClick={() => toast.success("Preferences saved")}>
                 Save Preferences
               </Button>
             </CardContent>

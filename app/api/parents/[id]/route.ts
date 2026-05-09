@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { updateClerkRole } from "@/lib/clerk";
+import { updateClerkProfileName, updateClerkRole } from "@/lib/clerk";
 import { apiError, apiResponse, handleRouteError, parseJson, requireSession } from "@/lib/server/api";
 import { parentPatchSchema } from "@/lib/validations/api";
 
@@ -48,19 +48,29 @@ export async function PATCH(request: Request, { params }: Params) {
       return apiError("Only super admins can assign super admin", 403);
     }
 
+    const existingUser = await prisma.user.findUnique({
+      where: { id },
+      select: { clerkId: true },
+    });
+
+    if (!existingUser) return apiError("Parent not found", 404);
+
+    if (data.name) {
+      await updateClerkProfileName(existingUser.clerkId, data.name);
+    }
+
+    if (data.role && !existingUser.clerkId.startsWith("pending:")) {
+      await updateClerkRole(existingUser.clerkId, data.role);
+    }
+
     const user = await prisma.user.update({
       where: { id },
       data,
       include: { children: true },
     });
 
-    if (data.role && !user.clerkId.startsWith("pending:")) {
-      await updateClerkRole(user.clerkId, data.role);
-    }
-
     return apiResponse(user);
   } catch (error) {
     return handleRouteError(error);
   }
 }
-

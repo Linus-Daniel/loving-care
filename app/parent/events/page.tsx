@@ -10,10 +10,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useEvents, useRegisterForEvent, useUnregisterFromEvent } from "@/hooks/useEvents";
 
 export default function ParentEvents() {
   const [reminders, setReminders] = useState<Record<string, boolean>>({});
+  const [pendingEventId, setPendingEventId] = useState<string | null>(null);
+  const { data: currentUser } = useCurrentUser();
   const { data: events = [], isLoading } = useEvents();
   const register = useRegisterForEvent();
   const unregister = useUnregisterFromEvent();
@@ -21,10 +24,13 @@ export default function ParentEvents() {
   const upcoming = events.filter((event) => new Date(event.date) >= new Date()).length;
 
   function toggleRegister(eventId: string, isRegistered: boolean) {
+    setPendingEventId(eventId);
+
     if (isRegistered) {
       unregister.mutate(eventId, {
         onSuccess: () => toast.success("Unregistered from event"),
         onError: (error) => toast.error(error.message),
+        onSettled: () => setPendingEventId(null),
       });
       return;
     }
@@ -34,6 +40,7 @@ export default function ParentEvents() {
       {
         onSuccess: () => toast.success("Registered for event"),
         onError: (error) => toast.error(error.message),
+        onSettled: () => setPendingEventId(null),
       },
     );
   }
@@ -66,7 +73,8 @@ export default function ParentEvents() {
       ) : (
         <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {events.map((event) => {
-            const registered = event.registrations.length > 0;
+            const registered = event.registrations.some((registration) => registration.userId === currentUser?.id);
+            const isMutating = pendingEventId === event.id;
             const date = new Date(event.date);
 
             return (
@@ -109,16 +117,17 @@ export default function ParentEvents() {
                     <div className="flex items-center justify-between gap-3 border-t border-primary/10 pt-4">
                       <Button
                         variant={registered ? "outline" : "default"}
-                        className={registered ? "border-destructive text-destructive hover:bg-destructive/5" : "bg-accent text-white hover:bg-accent-400"}
+                        className={registered ? "border-destructive text-destructive hover:bg-destructive/5" : "bg-accent-300 text-white hover:bg-accent-400"}
                         size="sm"
-                        disabled={register.isPending || unregister.isPending}
+                        disabled={isMutating}
                         onClick={() => toggleRegister(event.id, registered)}
                       >
-                        {registered ? "Unregister" : "Register"}
+                        {isMutating ? "Saving..." : registered ? "Unregister" : "Register"}
                       </Button>
                       <div className="flex items-center gap-2 rounded-full bg-[#FFF9F0] px-3 py-2">
                         <Bell className="h-3.5 w-3.5 text-muted-foreground" />
                         <Switch
+                          className="data-[state=checked]:bg-accent-300 data-[state=unchecked]:bg-muted"
                           checked={reminders[event.id] ?? true}
                           onCheckedChange={(checked) => setReminders({ ...reminders, [event.id]: checked })}
                         />
